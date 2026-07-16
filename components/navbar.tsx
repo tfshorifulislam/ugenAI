@@ -7,6 +7,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import { UserMenu } from "./user-menu";
 import { useSession, signOut } from "@/lib/auth-client";
+import { useToast } from "@/contexts/toast-context";
+import { useRouter } from "next/navigation";
 
 const navLinks = [
   { name: "Home", href: "/" },
@@ -17,6 +19,8 @@ const navLinks = [
 export const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
+  const { toast, success } = useToast();
 
   const { data: session, isPending } = useSession();
   const user = session?.user || null;
@@ -30,7 +34,7 @@ export const Navbar = () => {
     >
       <div className="max-w-7xl mx-auto">
         <div className="glass rounded-2xl px-6 py-3 flex items-center justify-between">
-          
+
           {/* Logo */}
           <Link href="/" className="relative z-10 group flex items-center">
             <span className="text-2xl font-bold tracking-tight text-white transition-colors">
@@ -46,9 +50,8 @@ export const Navbar = () => {
                 <Link
                   key={link.name}
                   href={link.href}
-                  className={`relative text-sm font-medium transition-colors hover:text-white ${
-                    isActive ? "text-white" : "text-white/60"
-                  }`}
+                  className={`relative text-sm font-medium transition-colors hover:text-white ${isActive ? "text-white" : "text-white/60"
+                    }`}
                 >
                   {link.name}
                   {isActive && (
@@ -107,9 +110,8 @@ export const Navbar = () => {
                   key={link.name}
                   href={link.href}
                   onClick={() => setMobileMenuOpen(false)}
-                  className={`text-lg font-medium transition-colors ${
-                    pathname === link.href ? "text-white" : "text-white/60"
-                  }`}
+                  className={`text-lg font-medium transition-colors ${pathname === link.href ? "text-white" : "text-white/60"
+                    }`}
                 >
                   {link.name}
                 </Link>
@@ -154,9 +156,23 @@ export const Navbar = () => {
                     Settings
                   </Link>
                   <button
-                    onClick={() => {
-                      signOut();
+                    onClick={async () => {
                       setMobileMenuOpen(false);
+                      try {
+                        await signOut({
+                          fetchOptions: {
+                            onSuccess: () => {
+                              success("Logged out successfully");
+                              router.push("/");
+                            },
+                            onError: (ctx) => {
+                              toast(ctx.error.message || "Failed to log out", "error");
+                            }
+                          },
+                        });
+                      } catch (err: any) {
+                        toast(err.message || "Failed to log out", "error");
+                      }
                     }}
                     className="text-left text-lg font-medium text-red-400 hover:text-red-300 mt-2"
                   >

@@ -3,8 +3,10 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { signUp, signIn } from "@/lib/auth-client";
 import { Loader2 } from "lucide-react";
+import { useToast } from "@/contexts/toast-context";
 
 export default function SignupPage() {
   const [name, setName] = useState("");
@@ -13,19 +15,25 @@ export default function SignupPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
+  const { toast, success } = useToast();
 
   const handleEmailSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError(null);
     try {
-      const { data, error } = await signUp.email({ name, email, password });
-      if (error) {
-        setError(error.message || "Failed to create account");
+      const { data, error: signUpError } = await signUp.email({ name, email, password });
+      if (signUpError) {
+        setError(signUpError.message || "Failed to create account");
+        toast(signUpError.message || "Failed to create account", "error");
+      } else {
+        success("Account created successfully");
+        router.push("/");
       }
-      // redirect is handled automatically or you can handle it via data
     } catch (err: any) {
       setError(err.message || "An unexpected error occurred");
+      toast(err.message || "An unexpected error occurred", "error");
     } finally {
       setIsLoading(false);
     }
@@ -35,11 +43,17 @@ export default function SignupPage() {
     setGoogleLoading(true);
     setError(null);
     try {
-      await signIn.social({
+      const { error: googleError } = await signIn.social({
         provider: "google",
       });
+      if (googleError) {
+        setError(googleError.message || "Failed to sign up with Google");
+        toast(googleError.message || "Failed to sign up with Google", "error");
+        setGoogleLoading(false);
+      }
     } catch (err: any) {
       setError(err.message || "Failed to sign up with Google");
+      toast(err.message || "Failed to sign up with Google", "error");
       setGoogleLoading(false);
     }
   };

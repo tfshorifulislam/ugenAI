@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { User, LayoutDashboard, Settings, LogOut, ChevronDown } from "lucide-react";
 import { signOut } from "@/lib/auth-client";
+import { useToast } from "@/contexts/toast-context";
 
 type User = {
   name?: string;
@@ -17,6 +18,7 @@ export function UserMenu({ user }: { user: User }) {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
+  const { toast, success } = useToast();
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -85,13 +87,21 @@ export function UserMenu({ user }: { user: User }) {
             <button 
               onClick={async () => {
                 setIsOpen(false);
-                await signOut({
-                  fetchOptions: {
-                    onSuccess: () => {
-                      router.push("/");
+                try {
+                  await signOut({
+                    fetchOptions: {
+                      onSuccess: () => {
+                        success("Logged out successfully");
+                        router.push("/");
+                      },
+                      onError: (ctx) => {
+                        toast(ctx.error.message || "Failed to log out", "error");
+                      }
                     },
-                  },
-                });
+                  });
+                } catch (err: any) {
+                  toast(err.message || "Failed to log out", "error");
+                }
               }} 
               className="w-full flex items-center gap-3 px-3 py-2 text-sm font-medium text-red-400 hover:text-red-300 hover:bg-red-400/10 rounded-xl transition-colors"
             >

@@ -3,8 +3,10 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { signIn } from "@/lib/auth-client";
 import { Loader2 } from "lucide-react";
+import { useToast } from "@/contexts/toast-context";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -12,19 +14,25 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
+  const { toast, success } = useToast();
 
   const handleEmailSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError(null);
     try {
-      const { data, error } = await signIn.email({ email, password });
-      if (error) {
-        setError(error.message || "Failed to sign in");
+      const { data, error: signInError } = await signIn.email({ email, password });
+      if (signInError) {
+        setError(signInError.message || "Failed to sign in");
+        toast(signInError.message || "Failed to sign in", "error");
+      } else {
+        success("Login successful");
+        router.push("/");
       }
-      // redirect is handled automatically or you can handle it via data
     } catch (err: any) {
       setError(err.message || "An unexpected error occurred");
+      toast(err.message || "An unexpected error occurred", "error");
     } finally {
       setIsLoading(false);
     }
@@ -34,11 +42,17 @@ export default function LoginPage() {
     setGoogleLoading(true);
     setError(null);
     try {
-      await signIn.social({
+      const { error: googleError } = await signIn.social({
         provider: "google",
       });
+      if (googleError) {
+        setError(googleError.message || "Failed to sign in with Google");
+        toast(googleError.message || "Failed to sign in with Google", "error");
+        setGoogleLoading(false);
+      }
     } catch (err: any) {
       setError(err.message || "Failed to sign in with Google");
+      toast(err.message || "Failed to sign in with Google", "error");
       setGoogleLoading(false);
     }
   };
