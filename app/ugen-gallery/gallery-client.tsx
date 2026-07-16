@@ -14,6 +14,7 @@ type Post = {
   tags?: string[];
   userImage?: string;
   userName: string;
+  userId: string;
   createdAt: string;
   likes: number;
   views: number;
@@ -50,7 +51,7 @@ export function GalleryClient({ initialPosts }: { initialPosts: Post[] }) {
             className="w-full bg-black/20 border border-white/10 rounded-full py-4 pl-12 pr-6 text-white placeholder-white/40 focus:outline-none focus:border-ugen-primary/50 focus:ring-1 focus:ring-ugen-primary/50 transition-all shadow-xl backdrop-blur-md"
           />
           {searchQuery && (
-            <button 
+            <button
               onClick={() => setSearchQuery("")}
               className="absolute inset-y-0 right-0 pr-4 flex items-center text-white/40 hover:text-white transition-colors text-sm"
             >
@@ -76,7 +77,7 @@ export function GalleryClient({ initialPosts }: { initialPosts: Post[] }) {
           </Link>
         </div>
       ) : filteredPosts.length === 0 ? (
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           className="glass rounded-3xl p-12 text-center border border-white/10 max-w-2xl mx-auto mt-12"
@@ -88,7 +89,7 @@ export function GalleryClient({ initialPosts }: { initialPosts: Post[] }) {
           <p className="text-white/50 mb-8">Try adjusting your search terms or exploring different categories.</p>
         </motion.div>
       ) : (
-        <motion.div 
+        <motion.div
           layout
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
         >
@@ -100,7 +101,7 @@ export function GalleryClient({ initialPosts }: { initialPosts: Post[] }) {
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.95 }}
                 transition={{ duration: 0.3 }}
-                key={post._id} 
+                key={post._id}
                 className="group relative glass rounded-2xl border border-white/10 overflow-hidden hover:border-white/20 transition-all duration-300"
               >
                 {/* Image */}
@@ -129,7 +130,7 @@ export function GalleryClient({ initialPosts }: { initialPosts: Post[] }) {
 
                   <div className="flex items-center justify-between">
                     {/* User Info */}
-                    <div className="flex items-center gap-2">
+                    <Link href={`/profile/${post.userId}`} className="flex items-center gap-2">
                       <div className="w-6 h-6 rounded-full bg-white/20 overflow-hidden flex items-center justify-center flex-shrink-0">
                         {post.userImage ? (
                           <img src={post.userImage} alt={post.userName} className="w-full h-full object-cover" />
@@ -141,7 +142,7 @@ export function GalleryClient({ initialPosts }: { initialPosts: Post[] }) {
                         <span className="text-xs font-medium text-white/90 truncate max-w-[100px]">{post.userName}</span>
                         <span className="text-[10px] text-white/50">{new Date(post.createdAt).toLocaleDateString()}</span>
                       </div>
-                    </div>
+                    </Link>
 
                     {/* Stats */}
                     <div className="flex items-center gap-3 text-white/60">
