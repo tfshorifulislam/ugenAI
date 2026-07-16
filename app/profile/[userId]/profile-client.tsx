@@ -1,7 +1,9 @@
 "use client";
 
-import { Heart, Eye, Image as ImageIcon, Calendar, Sparkles } from "lucide-react";
+import { Heart, Eye, Image as ImageIcon, Calendar, Sparkles, MessageSquare, Loader2 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { motion } from "framer-motion";
 
 type ProfileProps = {
@@ -13,6 +15,27 @@ type ProfileProps = {
 };
 
 export function ProfileClient({ user, posts, stats, joinDate, isOwner }: ProfileProps) {
+  const router = useRouter();
+  const [isMessaging, setIsMessaging] = useState(false);
+
+  const handleMessage = async () => {
+    setIsMessaging(true);
+    try {
+      const res = await fetch("/api/messages/conversations", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: user.id }),
+      });
+      if (res.ok) {
+        router.push("/chat");
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsMessaging(false);
+    }
+  };
+
   const containerVariants = {
     hidden: { opacity: 0 },
     show: {
@@ -58,10 +81,19 @@ export function ProfileClient({ user, posts, stats, joinDate, isOwner }: Profile
           <div className="flex-1 flex flex-col items-center md:items-start text-center md:text-left">
             <div className="flex flex-col md:flex-row items-center gap-4 mb-4">
               <h1 className="text-3xl font-bold text-white">{user.name || "Anonymous User"}</h1>
-              {isOwner && (
+              {isOwner ? (
                 <Link href="/settings" className="px-4 py-1.5 bg-white/10 hover:bg-white/20 border border-white/10 rounded-full text-sm font-medium text-white transition-colors">
                   Edit Profile
                 </Link>
+              ) : (
+                <button 
+                  onClick={handleMessage}
+                  disabled={isMessaging}
+                  className="flex items-center gap-2 px-4 py-1.5 bg-ugen-primary hover:bg-ugen-primary/90 rounded-full text-sm font-medium text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isMessaging ? <Loader2 size={16} className="animate-spin" /> : <MessageSquare size={16} />}
+                  Message
+                </button>
               )}
             </div>
             
