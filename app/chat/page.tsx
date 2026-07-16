@@ -46,6 +46,15 @@ export default function ChatPage() {
   const [searchQuery, setSearchQuery] = useState("");
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
+  const isUserScrolledUp = useRef(false);
+
+  const handleScroll = () => {
+    if (!messagesContainerRef.current) return;
+    const { scrollTop, scrollHeight, clientHeight } = messagesContainerRef.current;
+    // Consider "scrolled up" if we are more than 100px from the bottom
+    isUserScrolledUp.current = scrollHeight - scrollTop - clientHeight > 100;
+  };
 
   useEffect(() => {
     if (!isPending && !session?.user) {
@@ -64,7 +73,9 @@ export default function ChatPage() {
   };
 
   useEffect(() => {
-    scrollToBottom();
+    if (!isUserScrolledUp.current) {
+      scrollToBottom();
+    }
   }, [messages]);
 
   const fetchConversations = async (isPolling = false) => {
@@ -85,8 +96,12 @@ export default function ChatPage() {
           }
         };
       });
+      // Remove any duplicate conversations just in case
+      const uniqueConversations = populated.filter((v: Conversation, i: number, a: Conversation[]) => 
+        a.findIndex(t => t._id === v._id) === i
+      );
       
-      setConversations(populated);
+      setConversations(uniqueConversations);
     } catch (error) {
       if (!isPolling) toast("Failed to load conversations", "error");
     } finally {
@@ -129,6 +144,7 @@ export default function ChatPage() {
   const handleSelectConversation = (conv: Conversation) => {
     setActiveConversation(conv);
     setShowMobileChat(true);
+    isUserScrolledUp.current = false; // Reset scroll state when changing chats
     fetchMessages(conv);
   };
 
@@ -162,6 +178,10 @@ export default function ChatPage() {
           ? { ...c, lastMessage: text, updatedAt: new Date().toISOString() } 
           : c
       ).sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()));
+      
+      // Force scroll to bottom when sending a message
+      isUserScrolledUp.current = false;
+      setTimeout(scrollToBottom, 100);
       
     } catch (error) {
       toast("Failed to send message", "error");
@@ -307,7 +327,11 @@ export default function ChatPage() {
               </div>
 
               {/* Messages Area */}
-              <div className="flex-1 overflow-y-auto p-4 md:p-6 flex flex-col gap-4 custom-scrollbar">
+              <div 
+                ref={messagesContainerRef}
+                onScroll={handleScroll}
+                className="flex-1 overflow-y-auto p-4 md:p-6 flex flex-col gap-4 custom-scrollbar"
+              >
                 {isLoadingMessages ? (
                   <div className="flex-1 flex items-center justify-center">
                     <Loader2 className="w-8 h-8 text-ugen-primary animate-spin" />
