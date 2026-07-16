@@ -9,6 +9,7 @@ import { LearnSection } from "@/components/learn-section";
 import { WhyChooseSection } from "@/components/why-choose-section";
 import { TestimonialsSection } from "@/components/testimonials-section";
 import { StatisticsSection } from "@/components/statistics-section";
+import { FAQSection } from "@/components/faq-section";
 
 export default function Home() {
   return (
@@ -24,6 +25,7 @@ export default function Home() {
       <WhyChooseSection />
       <TestimonialsSection />
       <StatisticsSection />
+      <FAQSection />
     </main>
   );
 }
