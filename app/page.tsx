@@ -8,6 +8,7 @@ import { FeaturedGallery } from "@/components/featured-gallery";
 import { LearnSection } from "@/components/learn-section";
 import { WhyChooseSection } from "@/components/why-choose-section";
 import { TestimonialsSection } from "@/components/testimonials-section";
+import { StatisticsSection } from "@/components/statistics-section";
 
 export default function Home() {
   return (
@@ -22,6 +23,7 @@ export default function Home() {
       <LearnSection />
       <WhyChooseSection />
       <TestimonialsSection />
+      <StatisticsSection />
     </main>
   );
 }
