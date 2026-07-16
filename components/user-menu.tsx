@@ -5,7 +5,13 @@ import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { User, LayoutDashboard, Settings, LogOut, ChevronDown } from "lucide-react";
 
-export function UserMenu({ user }: { user: any }) {
+type User = {
+  name?: string;
+  email?: string;
+  image?: string;
+};
+
+export function UserMenu({ user }: { user: User }) {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -36,9 +42,9 @@ export function UserMenu({ user }: { user: any }) {
             <span className="text-sm font-medium text-white">{getInitials(user?.name)}</span>
           )}
         </div>
-        <ChevronDown 
-          size={16} 
-          className={`text-white/60 transition-transform duration-300 ${isOpen ? "rotate-180 text-white" : "group-hover:text-white"}`} 
+        <ChevronDown
+          size={16}
+          className={`text-white/60 transition-transform duration-300 ${isOpen ? "rotate-180 text-white" : "group-hover:text-white"}`}
         />
       </button>
 
@@ -55,24 +61,24 @@ export function UserMenu({ user }: { user: any }) {
               <p className="text-sm font-medium text-white truncate">{user?.name || "User"}</p>
               <p className="text-xs text-white/50 truncate">{user?.email || "user@example.com"}</p>
             </div>
-            
+
             <Link href="/dashboard" onClick={() => setIsOpen(false)} className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-white/70 hover:text-white hover:bg-white/10 rounded-xl transition-colors">
               <LayoutDashboard size={16} />
               Dashboard
             </Link>
-            
+
             <Link href="/profile" onClick={() => setIsOpen(false)} className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-white/70 hover:text-white hover:bg-white/10 rounded-xl transition-colors">
               <User size={16} />
               Profile
             </Link>
-            
+
             <Link href="/settings" onClick={() => setIsOpen(false)} className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-white/70 hover:text-white hover:bg-white/10 rounded-xl transition-colors">
               <Settings size={16} />
               Settings
             </Link>
-            
+
             <div className="h-[1px] w-full bg-white/10 my-1" />
-            
+
             <button onClick={() => setIsOpen(false)} className="w-full flex items-center gap-3 px-3 py-2 text-sm font-medium text-red-400 hover:text-red-300 hover:bg-red-400/10 rounded-xl transition-colors">
               <LogOut size={16} />
               Logout
