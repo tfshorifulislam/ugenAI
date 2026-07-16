@@ -169,11 +169,11 @@ export default function GenerateImagePage() {
         </div>
 
         {/* Right Column: Publish Details */}
-        <div className="flex flex-col space-y-6 lg:mt-[4.5rem]">
-          <div className="glass rounded-3xl p-6 border border-white/10 shadow-2xl relative overflow-hidden h-full">
+        <div className="flex flex-col space-y-6">
+          <div className="glass rounded-3xl p-6 border border-white/10 shadow-2xl relative">
             <h2 className="text-xl font-bold text-white mb-6">Publish Details</h2>
             
-            <form onSubmit={handlePublish} className="flex flex-col gap-5 h-full">
+            <form onSubmit={handlePublish} className="flex flex-col gap-5">
               <div className="space-y-1">
                 <label className="text-xs font-medium text-white/70 uppercase tracking-wider pl-1">Title</label>
                 <input
@@ -223,7 +223,7 @@ export default function GenerateImagePage() {
                 />
               </div>
 
-              <div className="mt-auto pt-4 flex flex-col gap-3">
+              <div className="pt-2 flex flex-col gap-3">
                 <motion.button
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
