@@ -3,24 +3,25 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { signIn } from "@/lib/auth-client";
+import { signUp, signIn } from "@/lib/auth-client";
 import { Loader2 } from "lucide-react";
 
-export default function LoginPage() {
+export default function SignupPage() {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleEmailSignIn = async (e: React.FormEvent) => {
+  const handleEmailSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError(null);
     try {
-      const { data, error } = await signIn.email({ email, password });
+      const { data, error } = await signUp.email({ name, email, password });
       if (error) {
-        setError(error.message || "Failed to sign in");
+        setError(error.message || "Failed to create account");
       }
       // redirect is handled automatically or you can handle it via data
     } catch (err: any) {
@@ -38,13 +39,13 @@ export default function LoginPage() {
         provider: "google",
       });
     } catch (err: any) {
-      setError(err.message || "Failed to sign in with Google");
+      setError(err.message || "Failed to sign up with Google");
       setGoogleLoading(false);
     }
   };
 
   return (
-    <div className="relative min-h-screen bg-ugen-bg flex items-center justify-center overflow-hidden selection:bg-ugen-primary/30">
+    <div className="relative min-h-screen bg-ugen-bg flex items-center justify-center overflow-hidden selection:bg-ugen-primary/30 py-12">
       {/* Background Decor */}
       <div className="absolute inset-0 z-0 pointer-events-none">
         <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-ugen-primary/10 rounded-full blur-[120px] animate-pulse" />
@@ -70,8 +71,8 @@ export default function LoginPage() {
           <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-ugen-primary via-ugen-accent to-purple-500 opacity-50" />
 
           <div className="text-center mb-8">
-            <h1 className="text-2xl font-bold text-white mb-2">Welcome back</h1>
-            <p className="text-white/60 text-sm">Sign in to continue your journey</p>
+            <h1 className="text-2xl font-bold text-white mb-2">Create an account</h1>
+            <p className="text-white/60 text-sm">Join ugenAI to start creating amazing prompts</p>
           </div>
 
           {error && (
@@ -84,7 +85,20 @@ export default function LoginPage() {
             </motion.div>
           )}
 
-          <form onSubmit={handleEmailSignIn} className="space-y-4">
+          <form onSubmit={handleEmailSignUp} className="space-y-4">
+            <div className="space-y-1">
+              <label className="text-xs font-medium text-white/70 uppercase tracking-wider pl-1">
+                Name
+              </label>
+              <input
+                type="text"
+                required
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="John Doe"
+                className="w-full px-4 py-3 bg-black/20 border border-white/10 rounded-xl focus:outline-none focus:border-ugen-primary/50 text-white placeholder-white/30 transition-colors"
+              />
+            </div>
             <div className="space-y-1">
               <label className="text-xs font-medium text-white/70 uppercase tracking-wider pl-1">
                 Email
@@ -99,14 +113,9 @@ export default function LoginPage() {
               />
             </div>
             <div className="space-y-1">
-              <div className="flex items-center justify-between pl-1 pr-1">
-                <label className="text-xs font-medium text-white/70 uppercase tracking-wider">
-                  Password
-                </label>
-                <Link href="#" className="text-xs text-ugen-primary hover:text-ugen-accent transition-colors">
-                  Forgot?
-                </Link>
-              </div>
+              <label className="text-xs font-medium text-white/70 uppercase tracking-wider pl-1">
+                Password
+              </label>
               <input
                 type="password"
                 required
@@ -124,7 +133,7 @@ export default function LoginPage() {
               type="submit"
               className="w-full py-3 px-4 bg-gradient-to-r from-ugen-primary to-ugen-accent text-white font-medium rounded-xl shadow-lg shadow-ugen-primary/20 transition-all flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed mt-2"
             >
-              {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : "Sign In"}
+              {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : "Sign Up"}
             </motion.button>
           </form>
 
@@ -171,9 +180,9 @@ export default function LoginPage() {
           </div>
 
           <div className="mt-8 text-center text-sm text-white/50">
-            Don't have an account?{" "}
-            <Link href="/signup" className="text-white hover:text-ugen-primary transition-colors font-medium">
-              Create one
+            Already have an account?{" "}
+            <Link href="/login" className="text-white hover:text-ugen-primary transition-colors font-medium">
+              Sign In
             </Link>
           </div>
         </div>

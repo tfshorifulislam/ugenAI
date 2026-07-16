@@ -3,7 +3,9 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { User, LayoutDashboard, Settings, LogOut, ChevronDown } from "lucide-react";
+import { signOut } from "@/lib/auth-client";
 
 type User = {
   name?: string;
@@ -14,6 +16,7 @@ type User = {
 export function UserMenu({ user }: { user: User }) {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -79,7 +82,19 @@ export function UserMenu({ user }: { user: User }) {
 
             <div className="h-[1px] w-full bg-white/10 my-1" />
 
-            <button onClick={() => setIsOpen(false)} className="w-full flex items-center gap-3 px-3 py-2 text-sm font-medium text-red-400 hover:text-red-300 hover:bg-red-400/10 rounded-xl transition-colors">
+            <button 
+              onClick={async () => {
+                setIsOpen(false);
+                await signOut({
+                  fetchOptions: {
+                    onSuccess: () => {
+                      router.push("/");
+                    },
+                  },
+                });
+              }} 
+              className="w-full flex items-center gap-3 px-3 py-2 text-sm font-medium text-red-400 hover:text-red-300 hover:bg-red-400/10 rounded-xl transition-colors"
+            >
               <LogOut size={16} />
               Logout
             </button>
