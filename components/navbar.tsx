@@ -10,10 +10,15 @@ import { useSession, signOut } from "@/lib/auth-client";
 import { useToast } from "@/contexts/toast-context";
 import { useRouter } from "next/navigation";
 
-const navLinks = [
+const publicLinks = [
   { name: "Home", href: "/" },
   { name: "ugen-gallery", href: "/ugen-gallery" },
   { name: "LearnAI", href: "/learn-ai" },
+];
+
+const privateLinks = [
+  { name: "Generate Image", href: "/generate-image" },
+  { name: "Profile", href: "/profile" },
 ];
 
 export const Navbar = () => {
@@ -24,6 +29,7 @@ export const Navbar = () => {
 
   const { data: session, isPending } = useSession();
   const user = session?.user || null;
+  const allLinks = user ? [...publicLinks, ...privateLinks] : publicLinks;
 
   return (
     <motion.header
@@ -44,7 +50,7 @@ export const Navbar = () => {
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
-            {navLinks.map((link) => {
+            {allLinks.map((link) => {
               const isActive = pathname === link.href;
               return (
                 <Link
@@ -105,7 +111,7 @@ export const Navbar = () => {
             className="absolute top-24 left-6 right-6 p-6 glass rounded-2xl md:hidden flex flex-col space-y-6"
           >
             <nav className="flex flex-col space-y-4">
-              {navLinks.map((link) => (
+              {allLinks.map((link) => (
                 <Link
                   key={link.name}
                   href={link.href}
@@ -135,18 +141,11 @@ export const Navbar = () => {
                     </div>
                   </div>
                   <Link
-                    href="/dashboard"
+                    href="/my-posts"
                     onClick={() => setMobileMenuOpen(false)}
                     className="text-lg font-medium text-white/60 hover:text-white"
                   >
-                    Dashboard
-                  </Link>
-                  <Link
-                    href="/profile"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="text-lg font-medium text-white/60 hover:text-white"
-                  >
-                    Profile
+                    My Posts
                   </Link>
                   <Link
                     href="/settings"

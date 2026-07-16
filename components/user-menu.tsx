@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { User, LayoutDashboard, Settings, LogOut, ChevronDown } from "lucide-react";
+import { User, LayoutDashboard, Settings, LogOut, ChevronDown, Images } from "lucide-react";
 import { signOut } from "@/lib/auth-client";
 import { useToast } from "@/contexts/toast-context";
 
@@ -67,14 +67,9 @@ export function UserMenu({ user }: { user: User }) {
               <p className="text-xs text-white/50 truncate">{user?.email || "user@example.com"}</p>
             </div>
 
-            <Link href="/dashboard" onClick={() => setIsOpen(false)} className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-white/70 hover:text-white hover:bg-white/10 rounded-xl transition-colors">
-              <LayoutDashboard size={16} />
-              Dashboard
-            </Link>
-
-            <Link href="/profile" onClick={() => setIsOpen(false)} className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-white/70 hover:text-white hover:bg-white/10 rounded-xl transition-colors">
-              <User size={16} />
-              Profile
+            <Link href="/my-posts" onClick={() => setIsOpen(false)} className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-white/70 hover:text-white hover:bg-white/10 rounded-xl transition-colors">
+              <Images size={16} />
+              My Posts
             </Link>
 
             <Link href="/settings" onClick={() => setIsOpen(false)} className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-white/70 hover:text-white hover:bg-white/10 rounded-xl transition-colors">
