@@ -6,6 +6,7 @@ import { HowItWorks } from "@/components/how-it-works";
 import { CategoriesSection } from "@/components/categories-section";
 import { FeaturedGallery } from "@/components/featured-gallery";
 import { LearnSection } from "@/components/learn-section";
+import { WhyChooseSection } from "@/components/why-choose-section";
 
 export default function Home() {
   return (
@@ -18,6 +19,7 @@ export default function Home() {
       <CategoriesSection />
       <FeaturedGallery />
       <LearnSection />
+      <WhyChooseSection />
     </main>
   );
 }
