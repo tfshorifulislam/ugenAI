@@ -91,19 +91,36 @@ export default function ChatPage() {
     }
   };
 
-  const fetchMessages = async (conv: Conversation) => {
-    setIsLoadingMessages(true);
+  const fetchMessages = async (conv: Conversation, isPolling = false) => {
+    if (!isPolling) setIsLoadingMessages(true);
     try {
       const res = await fetch(`/api/messages/${conv._id}`);
       if (!res.ok) throw new Error("Failed to load messages");
       const data = await res.json();
-      setMessages(data.messages);
+      setMessages(prev => {
+        // Prevent unnecessary state updates if no new messages
+        if (isPolling && prev.length === data.messages.length) {
+          return prev;
+        }
+        return data.messages;
+      });
     } catch (error) {
-      toast("Failed to load messages", "error");
+      if (!isPolling) toast("Failed to load messages", "error");
     } finally {
-      setIsLoadingMessages(false);
+      if (!isPolling) setIsLoadingMessages(false);
     }
   };
+
+  // Polling for real-time messages
+  useEffect(() => {
+    if (!activeConversation) return;
+
+    const intervalId = setInterval(() => {
+      fetchMessages(activeConversation, true);
+    }, 2000);
+
+    return () => clearInterval(intervalId);
+  }, [activeConversation]);
 
   const handleSelectConversation = (conv: Conversation) => {
     setActiveConversation(conv);
