@@ -1,11 +1,16 @@
-import { mongoClient } from "@/lib/auth";
+import { auth, mongoClient } from "@/lib/auth";
 import { notFound } from "next/navigation";
+import { headers } from "next/headers";
 import { ObjectId } from "mongodb";
 import { ProfileClient } from "./profile-client";
 
 export const dynamic = "force-dynamic";
 
 async function getPublicProfile(userId: string) {
+  const reqHeaders = await headers();
+  const session = await auth.api.getSession({ headers: reqHeaders });
+  const isOwner = session?.user?.id === userId;
+
   const db = mongoClient.db("ugenAI");
 
   let userDoc = null;
@@ -38,9 +43,11 @@ async function getPublicProfile(userId: string) {
       image: userDoc.image,
       createdAt: userDoc.createdAt,
       bio: "AI Prompt Engineer & Creator",
+      email: isOwner ? userDoc.email : undefined,
     },
     posts: posts.map(post => ({ ...post, _id: post._id.toString() })),
-    stats
+    stats,
+    isOwner
   };
 }
 
@@ -50,11 +57,11 @@ export default async function PublicProfilePage({ params }: { params: Promise<{ 
   const profileData = await getPublicProfile(userId);
   if (!profileData) return notFound();
 
-  const { user, posts, stats } = profileData;
+  const { user, posts, stats, isOwner } = profileData;
 
   const joinDate = user.createdAt
     ? new Date(user.createdAt).toLocaleDateString("en-US", { month: "long", year: "numeric" })
     : "Recently";
 
-  return <ProfileClient user={user} posts={posts} stats={stats} joinDate={joinDate} />;
+  return <ProfileClient user={user} posts={posts} stats={stats} joinDate={joinDate} isOwner={isOwner} />;
 }

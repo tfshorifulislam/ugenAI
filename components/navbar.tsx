@@ -16,9 +16,9 @@ const publicLinks = [
   { name: "LearnAI", href: "/learn-ai" },
 ];
 
-const privateLinks = [
+const getPrivateLinks = (userId: string) => [
   { name: "Generate Image", href: "/generate-image" },
-  { name: "Profile", href: "/profile" },
+  { name: "Profile", href: `/profile/${userId}` },
 ];
 
 export const Navbar = () => {
@@ -29,7 +29,7 @@ export const Navbar = () => {
 
   const { data: session, isPending } = useSession();
   const user = session?.user || null;
-  const allLinks = user ? [...publicLinks, ...privateLinks] : publicLinks;
+  const allLinks = user ? [...publicLinks, ...getPrivateLinks(user.id)] : publicLinks;
 
   return (
     <motion.header
@@ -77,7 +77,7 @@ export const Navbar = () => {
             {isPending ? (
               <div className="w-8 h-8 rounded-full bg-white/10 animate-pulse" />
             ) : user ? (
-              <UserMenu user={{ name: user.name || undefined, email: user.email, image: user.image || undefined }} />
+              <UserMenu user={{ id: user.id, name: user.name || undefined, email: user.email, image: user.image || undefined }} />
             ) : (
               <>
                 <Link href="/login" className="text-sm font-medium text-white/70 hover:text-white transition-colors">

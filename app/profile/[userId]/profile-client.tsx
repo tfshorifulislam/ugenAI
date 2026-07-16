@@ -1,6 +1,6 @@
 "use client";
 
-import { Heart, Eye, Image as ImageIcon, Calendar } from "lucide-react";
+import { Heart, Eye, Image as ImageIcon, Calendar, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 
@@ -9,9 +9,10 @@ type ProfileProps = {
   posts: any[];
   stats: any;
   joinDate: string;
+  isOwner?: boolean;
 };
 
-export function ProfileClient({ user, posts, stats, joinDate }: ProfileProps) {
+export function ProfileClient({ user, posts, stats, joinDate, isOwner }: ProfileProps) {
   const containerVariants = {
     hidden: { opacity: 0 },
     show: {
@@ -49,11 +50,19 @@ export function ProfileClient({ user, posts, stats, joinDate }: ProfileProps) {
                 <span className="text-4xl md:text-5xl font-bold text-white">{user.name?.charAt(0).toUpperCase() || "U"}</span>
               )}
             </div>
+            {isOwner && (
+              <div className="absolute bottom-2 right-2 w-6 h-6 bg-green-500 border-2 border-ugen-bg rounded-full shadow-lg" title="Online" />
+            )}
           </div>
 
           <div className="flex-1 flex flex-col items-center md:items-start text-center md:text-left">
             <div className="flex flex-col md:flex-row items-center gap-4 mb-4">
               <h1 className="text-3xl font-bold text-white">{user.name || "Anonymous User"}</h1>
+              {isOwner && (
+                <Link href="/settings" className="px-4 py-1.5 bg-white/10 hover:bg-white/20 border border-white/10 rounded-full text-sm font-medium text-white transition-colors">
+                  Edit Profile
+                </Link>
+              )}
             </div>
             
             <div className="flex items-center gap-8 mb-6">
@@ -74,6 +83,9 @@ export function ProfileClient({ user, posts, stats, joinDate }: ProfileProps) {
             <div className="space-y-2">
               <p className="text-white/90 text-sm md:text-base">{user.bio}</p>
               <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 text-xs text-white/50">
+                {isOwner && user.email && (
+                  <span className="flex items-center gap-1"><Sparkles size={14} className="text-ugen-primary" /> {user.email}</span>
+                )}
                 <span className="flex items-center gap-1"><Calendar size={14} className="text-ugen-accent" /> Joined {joinDate}</span>
               </div>
             </div>
@@ -89,7 +101,7 @@ export function ProfileClient({ user, posts, stats, joinDate }: ProfileProps) {
         >
           <div className="flex items-center gap-2 text-white font-medium px-4 py-2 border-b-2 border-ugen-primary">
             <ImageIcon size={18} />
-            Published Posts
+            {isOwner ? "My Posts" : "Published Posts"}
           </div>
         </motion.div>
 
@@ -104,7 +116,19 @@ export function ProfileClient({ user, posts, stats, joinDate }: ProfileProps) {
               <ImageIcon className="w-10 h-10 text-white/30" />
             </div>
             <h3 className="text-2xl font-bold text-white mb-2">No Posts Yet</h3>
-            <p className="text-white/50 mb-8 max-w-md text-center">This user hasn't published any AI images yet.</p>
+            {isOwner ? (
+              <>
+                <p className="text-white/50 mb-8 max-w-md text-center">You haven't published any AI images yet. Start generating and share your creativity!</p>
+                <Link 
+                  href="/generate-image"
+                  className="px-6 py-3 bg-gradient-to-r from-ugen-primary to-ugen-accent text-white font-medium rounded-full shadow-lg shadow-ugen-primary/20 hover:scale-105 transition-transform"
+                >
+                  Generate Image
+                </Link>
+              </>
+            ) : (
+              <p className="text-white/50 mb-8 max-w-md text-center">This user hasn't published any AI images yet.</p>
+            )}
           </motion.div>
         ) : (
           <motion.div 
