@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { User, LayoutDashboard, Settings, LogOut, ChevronDown, Images } from "lucide-react";
+import { User, Settings, LogOut, ChevronDown, Images } from "lucide-react";
 import { signOut } from "@/lib/auth-client";
 import { useToast } from "@/contexts/toast-context";
 
@@ -67,9 +67,9 @@ export function UserMenu({ user }: { user: User }) {
               <p className="text-xs text-white/50 truncate">{user?.email || "user@example.com"}</p>
             </div>
 
-            <Link href="/my-posts" onClick={() => setIsOpen(false)} className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-white/70 hover:text-white hover:bg-white/10 rounded-xl transition-colors">
+            <Link href="/profile" onClick={() => setIsOpen(false)} className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-white/70 hover:text-white hover:bg-white/10 rounded-xl transition-colors">
               <Images size={16} />
-              My Posts
+              Profile
             </Link>
 
             <Link href="/settings" onClick={() => setIsOpen(false)} className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-white/70 hover:text-white hover:bg-white/10 rounded-xl transition-colors">
@@ -79,7 +79,7 @@ export function UserMenu({ user }: { user: User }) {
 
             <div className="h-[1px] w-full bg-white/10 my-1" />
 
-            <button 
+            <button
               onClick={async () => {
                 setIsOpen(false);
                 try {
@@ -97,7 +97,7 @@ export function UserMenu({ user }: { user: User }) {
                 } catch (err: any) {
                   toast(err.message || "Failed to log out", "error");
                 }
-              }} 
+              }}
               className="w-full flex items-center gap-3 px-3 py-2 text-sm font-medium text-red-400 hover:text-red-300 hover:bg-red-400/10 rounded-xl transition-colors"
             >
               <LogOut size={16} />
