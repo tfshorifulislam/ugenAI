@@ -18,8 +18,8 @@ export const Navbar = () => {
   const pathname = usePathname();
 
   // Mock authentication - replace with real auth session later
-  // Example for testing: const user = { name: "John Doe", email: "john@example.com" };
-  const user = null; 
+  // Example for testing: const user = { name: "John Doe", email: "john@example.com", image: "" };
+  const user: any = null; 
 
   return (
     <motion.header

@@ -10,6 +10,7 @@ import { WhyChooseSection } from "@/components/why-choose-section";
 import { TestimonialsSection } from "@/components/testimonials-section";
 import { StatisticsSection } from "@/components/statistics-section";
 import { FAQSection } from "@/components/faq-section";
+import { CTASection } from "@/components/cta-section";
 
 export default function Home() {
   return (
@@ -26,6 +27,7 @@ export default function Home() {
       <TestimonialsSection />
       <StatisticsSection />
       <FAQSection />
+      <CTASection />
     </main>
   );
 }
