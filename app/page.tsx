@@ -7,6 +7,7 @@ import { CategoriesSection } from "@/components/categories-section";
 import { FeaturedGallery } from "@/components/featured-gallery";
 import { LearnSection } from "@/components/learn-section";
 import { WhyChooseSection } from "@/components/why-choose-section";
+import { TestimonialsSection } from "@/components/testimonials-section";
 
 export default function Home() {
   return (
@@ -20,6 +21,7 @@ export default function Home() {
       <FeaturedGallery />
       <LearnSection />
       <WhyChooseSection />
+      <TestimonialsSection />
     </main>
   );
 }
