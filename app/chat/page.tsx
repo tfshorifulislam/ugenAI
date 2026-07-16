@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { useSession } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Send, Loader2, MessageSquare, ArrowLeft, MoreVertical } from "lucide-react";
+import { Send, Loader2, MessageSquare, ArrowLeft, MoreVertical, Search } from "lucide-react";
 import { useToast } from "@/contexts/toast-context";
 
 type Conversation = {
@@ -41,6 +41,9 @@ export default function ChatPage() {
   
   // Mobile view state
   const [showMobileChat, setShowMobileChat] = useState(false);
+  
+  // Search state
+  const [searchQuery, setSearchQuery] = useState("");
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -64,7 +67,7 @@ export default function ChatPage() {
     scrollToBottom();
   }, [messages]);
 
-  const fetchConversations = async () => {
+  const fetchConversations = async (isPolling = false) => {
     try {
       const res = await fetch("/api/messages/conversations");
       if (!res.ok) throw new Error("Failed to load conversations");
@@ -85,9 +88,9 @@ export default function ChatPage() {
       
       setConversations(populated);
     } catch (error) {
-      toast("Failed to load conversations", "error");
+      if (!isPolling) toast("Failed to load conversations", "error");
     } finally {
-      setIsLoadingConversations(false);
+      if (!isPolling) setIsLoadingConversations(false);
     }
   };
 
@@ -111,12 +114,13 @@ export default function ChatPage() {
     }
   };
 
-  // Polling for real-time messages
+  // Polling for real-time messages and conversations
   useEffect(() => {
-    if (!activeConversation) return;
-
     const intervalId = setInterval(() => {
-      fetchMessages(activeConversation, true);
+      fetchConversations(true);
+      if (activeConversation) {
+        fetchMessages(activeConversation, true);
+      }
     }, 2000);
 
     return () => clearInterval(intervalId);
@@ -198,11 +202,21 @@ export default function ChatPage() {
         
         {/* Left Sidebar: Conversations */}
         <div className={`w-full md:w-80 lg:w-96 flex-shrink-0 flex flex-col border-r border-white/10 ${showMobileChat ? 'hidden md:flex' : 'flex'}`}>
-          <div className="p-5 border-b border-white/10 flex items-center justify-between">
+          <div className="p-5 border-b border-white/10 flex flex-col gap-4">
             <h2 className="text-xl font-bold text-white flex items-center gap-2">
               <MessageSquare className="text-ugen-primary" size={20} />
               Messages
             </h2>
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40" size={16} />
+              <input 
+                type="text" 
+                placeholder="Search by name..." 
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full bg-black/20 border border-white/10 rounded-full py-2 pl-9 pr-4 text-sm text-white placeholder-white/40 focus:outline-none focus:border-ugen-primary/50 transition-colors"
+              />
+            </div>
           </div>
           
           <div className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar">
@@ -219,7 +233,9 @@ export default function ChatPage() {
               </div>
             ) : (
               <div className="flex flex-col">
-                {conversations.map(conv => (
+                {conversations.filter(conv => 
+                  !searchQuery.trim() || conv.otherUser?.name.toLowerCase().includes(searchQuery.trim().toLowerCase())
+                ).map(conv => (
                   <button
                     key={conv._id}
                     onClick={() => handleSelectConversation(conv)}
@@ -245,6 +261,13 @@ export default function ChatPage() {
                     </div>
                   </button>
                 ))}
+                {conversations.length > 0 && conversations.filter(conv => 
+                  !searchQuery.trim() || conv.otherUser?.name.toLowerCase().includes(searchQuery.trim().toLowerCase())
+                ).length === 0 && (
+                  <div className="p-8 text-center flex flex-col items-center">
+                    <p className="text-white/40 text-sm">No users found.</p>
+                  </div>
+                )}
               </div>
             )}
           </div>
