@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Eye, Sparkles, Search } from "lucide-react";
+import {  Sparkles, Search } from "lucide-react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { GalleryCard } from "@/components/gallery-card";
@@ -94,7 +94,7 @@ export function GalleryClient({ initialPosts }: { initialPosts: Post[] }) {
       ) : (
         <motion.div
           layout
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
         >
           <AnimatePresence>
             {filteredPosts.map((post) => (
