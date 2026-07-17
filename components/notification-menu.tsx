@@ -27,6 +27,81 @@ export function NotificationMenu() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const menuRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
+  
+  const previousUnreadIds = useRef<Set<string>>(new Set());
+  const isInitialLoad = useRef(true);
+  const audioCtxRef = useRef<any>(null);
+
+  // Setup audio context on first interaction to bypass autoplay policies
+  useEffect(() => {
+    const handleUserInteraction = () => {
+      const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+      if (!audioCtxRef.current && AudioContextClass) {
+        audioCtxRef.current = new AudioContextClass();
+      }
+      if (audioCtxRef.current?.state === 'suspended') {
+        audioCtxRef.current.resume();
+      }
+      
+      // Remove listeners once we have a running context
+      if (audioCtxRef.current?.state === 'running') {
+        window.removeEventListener('click', handleUserInteraction);
+        window.removeEventListener('keydown', handleUserInteraction);
+      }
+    };
+
+    window.addEventListener('click', handleUserInteraction);
+    window.addEventListener('keydown', handleUserInteraction);
+    
+    return () => {
+      window.removeEventListener('click', handleUserInteraction);
+      window.removeEventListener('keydown', handleUserInteraction);
+    };
+  }, []);
+
+  const playNotificationSound = () => {
+    console.log("[NotificationSound] playNotificationSound triggered");
+    try {
+      if (!audioCtxRef.current) {
+        const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+        if (AudioContextClass) audioCtxRef.current = new AudioContextClass();
+      }
+      
+      const ctx = audioCtxRef.current;
+      if (!ctx) {
+        console.warn("[NotificationSound] Web Audio API not supported");
+        return;
+      }
+      
+      console.log("[NotificationSound] AudioContext state before play:", ctx.state);
+      
+      if (ctx.state === 'suspended') {
+        ctx.resume();
+      }
+      const osc = ctx.createOscillator();
+      const gainNode = ctx.createGain();
+      
+      // A gentle 'pop'/'ding' sound
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(587.33, ctx.currentTime); // D5
+      osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.05); // A5
+      
+      gainNode.gain.setValueAtTime(0, ctx.currentTime);
+      gainNode.gain.linearRampToValueAtTime(0.2, ctx.currentTime + 0.05);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.2);
+      
+      osc.connect(gainNode);
+      gainNode.connect(ctx.destination);
+      
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 0.2);
+      
+      console.log("[NotificationSound] Sound played successfully");
+    } catch (e) {
+      // Ignore if browser blocks auto-play
+      console.error("[NotificationSound] Failed to play notification sound:", e);
+    }
+  };
 
   // Polling for notifications
   useEffect(() => {
@@ -40,7 +115,22 @@ export function NotificationMenu() {
       const res = await fetch("/api/notifications");
       if (res.ok) {
         const data = await res.json();
-        setNotifications(data.notifications || []);
+        const newNotifs: Notification[] = data.notifications || [];
+        setNotifications(newNotifs);
+
+        const unreadNotifs = newNotifs.filter(n => !n.isRead);
+
+        if (isInitialLoad.current) {
+          isInitialLoad.current = false;
+          previousUnreadIds.current = new Set(unreadNotifs.map(n => n._id));
+        } else {
+          const hasNewUnread = unreadNotifs.some(n => !previousUnreadIds.current.has(n._id));
+          if (hasNewUnread) {
+            console.log("[NotificationSound] New unread notification detected, attempting to play sound");
+            playNotificationSound();
+          }
+          previousUnreadIds.current = new Set(unreadNotifs.map(n => n._id));
+        }
       }
     } catch (error) {
       console.error("Failed to fetch notifications", error);
