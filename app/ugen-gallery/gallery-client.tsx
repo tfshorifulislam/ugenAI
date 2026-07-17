@@ -5,6 +5,7 @@ import { Heart, Eye, Sparkles, Search } from "lucide-react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { LikeButton } from "@/components/like-button";
+import { PostViewTracker } from "@/components/post-view-tracker";
 
 type Post = {
   _id: string;
@@ -23,9 +24,10 @@ type Post = {
 };
 
 export function GalleryClient({ initialPosts }: { initialPosts: Post[] }) {
+  const [posts, setPosts] = useState(initialPosts);
   const [searchQuery, setSearchQuery] = useState("");
 
-  const filteredPosts = initialPosts.filter((post) => {
+  const filteredPosts = posts.filter((post) => {
     const query = searchQuery.trim().toLowerCase();
     if (!query) return true;
 
@@ -64,7 +66,7 @@ export function GalleryClient({ initialPosts }: { initialPosts: Post[] }) {
       </div>
 
       {/* Gallery */}
-      {initialPosts.length === 0 ? (
+      {posts.length === 0 ? (
         <div className="glass rounded-3xl p-12 text-center border border-white/10 max-w-2xl mx-auto mt-12">
           <div className="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-6">
             <Sparkles className="w-10 h-10 text-white/30" />
@@ -117,6 +119,13 @@ export function GalleryClient({ initialPosts }: { initialPosts: Post[] }) {
 
                 {/* Overlay Gradient for Text Readability */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-80" />
+
+                <PostViewTracker 
+                  postId={post._id} 
+                  onUpdate={(views) => {
+                    setPosts(current => current.map(p => p._id === post._id ? { ...p, views } : p));
+                  }} 
+                />
 
                 {/* Content Area (Absolute positioned on bottom) */}
                 <div className="absolute bottom-0 left-0 right-0 p-5 flex flex-col justify-end">

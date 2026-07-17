@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { LikeButton } from "@/components/like-button";
+import { PostViewTracker } from "@/components/post-view-tracker";
 
 type ProfileProps = {
   user: any;
@@ -18,6 +19,7 @@ type ProfileProps = {
 export function ProfileClient({ user, posts, stats, joinDate, isOwner }: ProfileProps) {
   const router = useRouter();
   const [isMessaging, setIsMessaging] = useState(false);
+  const [profilePosts, setProfilePosts] = useState(posts);
 
   const handleMessage = async () => {
     setIsMessaging(true);
@@ -140,7 +142,7 @@ export function ProfileClient({ user, posts, stats, joinDate, isOwner }: Profile
         </motion.div>
 
         {/* Posts Grid */}
-        {posts.length === 0 ? (
+        {profilePosts.length === 0 ? (
           <motion.div 
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -171,7 +173,7 @@ export function ProfileClient({ user, posts, stats, joinDate, isOwner }: Profile
             animate="show"
             className="grid grid-cols-2 md:grid-cols-3 gap-1 md:gap-4"
           >
-            {posts.map((post: any) => (
+            {profilePosts.map((post: any) => (
               <motion.div variants={itemVariants} key={post._id}>
                 <Link 
                   href={`/post/${post._id}`} 
@@ -181,6 +183,12 @@ export function ProfileClient({ user, posts, stats, joinDate, isOwner }: Profile
                     src={post.image}
                     alt={post.title}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                  />
+                  <PostViewTracker 
+                    postId={post._id} 
+                    onUpdate={(views) => {
+                      setProfilePosts(current => current.map(p => p._id === post._id ? { ...p, views } : p));
+                    }} 
                   />
                   
                   <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center gap-3">
