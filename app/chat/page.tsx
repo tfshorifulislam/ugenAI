@@ -48,6 +48,7 @@ export default function ChatPage() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const isUserScrolledUp = useRef(false);
+  const isInitialLoad = useRef(true);
 
   const handleScroll = () => {
     if (!messagesContainerRef.current) return;
@@ -79,13 +80,23 @@ export default function ChatPage() {
     }
   }, [session]);
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  const scrollToBottom = (behavior: ScrollBehavior = "smooth") => {
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTo({
+        top: messagesContainerRef.current.scrollHeight,
+        behavior
+      });
+    }
   };
 
   useEffect(() => {
     if (!isUserScrolledUp.current) {
-      scrollToBottom();
+      scrollToBottom(isInitialLoad.current ? "auto" : "smooth");
+      if (messages.length > 0) {
+        setTimeout(() => {
+          isInitialLoad.current = false;
+        }, 100);
+      }
     }
   }, [messages]);
 
@@ -145,6 +156,7 @@ export default function ChatPage() {
     setActiveConversation(conv);
     setShowMobileChat(true);
     isUserScrolledUp.current = false; // Reset scroll state when changing chats
+    isInitialLoad.current = true;
     fetchMessages(conv);
   };
 
@@ -181,7 +193,7 @@ export default function ChatPage() {
       
       // Force scroll to bottom when sending a message
       isUserScrolledUp.current = false;
-      setTimeout(scrollToBottom, 100);
+      setTimeout(() => scrollToBottom("smooth"), 100);
       
     } catch (error) {
       toast("Failed to send message", "error");
