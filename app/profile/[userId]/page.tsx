@@ -56,12 +56,15 @@ async function getPublicProfile(userId: string) {
       savedPosts = savedRelations
         .map(rel => postsMap.get(rel.imageId))
         .filter((p): p is NonNullable<typeof p> => !!p)
-        .map(post => ({
-          ...post,
-          _id: post._id.toString(),
-          isLiked: session?.user?.id ? (post.likedBy || []).includes(session.user.id) : false,
-          isSaved: true
-        }));
+        .map(post => {
+          const p = post as any;
+          return {
+            ...p,
+            _id: p._id.toString(),
+            isLiked: session?.user?.id ? (p.likedBy || []).includes(session.user.id) : false,
+            isSaved: true
+          } as PostType;
+        });
     }
   }
 
@@ -74,11 +77,14 @@ async function getPublicProfile(userId: string) {
       bio: "AI Prompt Engineer & Creator",
       email: isOwner ? userDoc.email : undefined,
     },
-    posts: posts.map(post => ({ 
-      ...post, 
-      _id: post._id.toString(),
-      isLiked: session?.user?.id ? (post.likedBy || []).includes(session.user.id) : false
-    })),
+    posts: posts.map(post => {
+      const p = post as any;
+      return {
+        ...p,
+        _id: p._id.toString(),
+        isLiked: session?.user?.id ? (p.likedBy || []).includes(session.user.id) : false
+      } as PostType;
+    }),
     savedPosts,
     stats,
     isOwner

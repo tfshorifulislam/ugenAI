@@ -35,7 +35,7 @@ export default async function GalleryPostModal({
     _id: post._id.toString(),
     isLiked: userId ? (post.likedBy || []).includes(userId) : false,
     isSaved,
-  };
+  } as unknown as PostType;
 
   const relatedPostsRaw = await db.collection("posts")
     .find({ status: "published", _id: { $ne: new ObjectId(id) } })
