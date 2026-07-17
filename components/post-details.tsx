@@ -124,21 +124,32 @@ export function PostDetails({ post }: { post: PostType }) {
 
         {post.prompt && (
           <div className="mb-8">
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="text-sm font-medium text-white/50 uppercase tracking-wider">Prompt</h3>
-              <button 
-                onClick={handleCopyPrompt}
-                className="flex items-center gap-1.5 text-xs font-medium text-white/60 hover:text-white transition-colors bg-white/5 hover:bg-white/10 px-2.5 py-1 rounded-md"
-              >
-                {promptCopied ? <Check size={14} className="text-green-400" /> : <Copy size={14} />}
-                {promptCopied ? <span className="text-green-400">Copied!</span> : <span>Copy</span>}
-              </button>
-            </div>
-            <div className="bg-black/20 p-4 rounded-xl border border-white/5 max-h-32 overflow-y-auto custom-scrollbar">
-              <p className="text-white/80 text-sm leading-relaxed whitespace-pre-wrap select-all">
-                {post.prompt}
-              </p>
-            </div>
+            {post.prompt === "Uploaded Image" ? (
+              <div>
+                <h3 className="text-sm font-medium text-white/50 uppercase tracking-wider mb-2">Prompt</h3>
+                <p className="text-white/40 text-sm italic bg-white/5 p-4 rounded-xl border border-white/5">
+                  This image was uploaded manually, so no AI generation prompt is available.
+                </p>
+              </div>
+            ) : (
+              <>
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="text-sm font-medium text-white/50 uppercase tracking-wider">Prompt</h3>
+                  <button 
+                    onClick={handleCopyPrompt}
+                    className="flex items-center gap-1.5 text-xs font-medium text-white/60 hover:text-white transition-colors bg-white/5 hover:bg-white/10 px-2.5 py-1 rounded-md"
+                  >
+                    {promptCopied ? <Check size={14} className="text-green-400" /> : <Copy size={14} />}
+                    {promptCopied ? <span className="text-green-400">Copied!</span> : <span>Copy</span>}
+                  </button>
+                </div>
+                <div className="bg-black/20 p-4 rounded-xl border border-white/5 max-h-32 overflow-y-auto custom-scrollbar">
+                  <p className="text-white/80 text-sm leading-relaxed whitespace-pre-wrap select-all">
+                    {post.prompt}
+                  </p>
+                </div>
+              </>
+            )}
           </div>
         )}
 

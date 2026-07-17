@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
       method: "POST",
       body: imgbbForm,
     });
-    
+
     if (!imgbbRes.ok) {
       throw new Error("Failed to upload image to ImgBB");
     }
