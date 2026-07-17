@@ -38,71 +38,71 @@ export const Navbar = () => {
     >
       <div className="max-w-7xl mx-auto w-full flex items-center justify-between">
 
-          {/* Logo */}
-          <Link href="/" className="relative z-10 group flex items-center">
-            <span className="text-2xl font-bold tracking-tight text-white transition-colors">
-              ugen<span className="text-gradient">AI</span>
-            </span>
-          </Link>
+        {/* Logo */}
+        <Link href="/" className="relative z-10 flex items-center select-none">
+          <h1 className="text-[22px] md:text-2xl font-extrabold tracking-tight leading-none text-white">
+            ugen<span className="text-gradient">AI</span>
+          </h1>
+        </Link>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-8">
-            {allLinks.map((link) => {
-              const isActive = pathname === link.href;
-              return (
-                <Link
-                  key={link.name}
-                  href={link.href}
-                  className={`relative text-sm font-medium transition-colors hover:text-white ${isActive ? "text-white" : "text-white/60"
-                    }`}
-                >
-                  {link.name}
-                  {isActive && (
-                    <motion.div
-                      layoutId="navbar-indicator"
-                      className="absolute -bottom-1 left-0 right-0 h-[2px] bg-ugen-primary rounded-full glow"
-                      transition={{ type: "spring", bounce: 0.25, duration: 0.5 }}
-                    />
-                  )}
-                </Link>
-              );
-            })}
-          </nav>
+        {/* Desktop Navigation */}
+        <nav className="hidden md:flex items-center space-x-8">
+          {allLinks.map((link) => {
+            const isActive = pathname === link.href;
+            return (
+              <Link
+                key={link.name}
+                href={link.href}
+                className={`relative text-sm font-medium transition-colors hover:text-white ${isActive ? "text-white" : "text-white/60"
+                  }`}
+              >
+                {link.name}
+                {isActive && (
+                  <motion.div
+                    layoutId="navbar-indicator"
+                    className="absolute -bottom-1 left-0 right-0 h-[2px] bg-ugen-primary rounded-full glow"
+                    transition={{ type: "spring", bounce: 0.25, duration: 0.5 }}
+                  />
+                )}
+              </Link>
+            );
+          })}
+        </nav>
 
-          {/* Auth Actions */}
-          <div className="flex items-center space-x-3 md:space-x-6">
-            {isPending ? (
-              <div className="w-8 h-8 rounded-full bg-white/10 animate-pulse" />
-            ) : user ? (
-              <div className="flex items-center gap-3">
-                <button
-                  onClick={() => setSearchOpen(true)}
-                  className="flex items-center justify-center w-10 h-10 rounded-full bg-white/10 border border-white/20 text-white/70 hover:text-white transition-all duration-300 hover:border-ugen-primary hover:shadow-[0_0_15px_rgba(99,102,241,0.5)]"
-                  title="Search Users"
-                >
-                  <Search size={18} />
-                </button>
-                <Link 
-                  href="/chat" 
-                  className="flex items-center justify-center w-10 h-10 rounded-full bg-white/10 border border-white/20 text-white/70 hover:text-white transition-all duration-300 hover:border-ugen-primary hover:shadow-[0_0_15px_rgba(99,102,241,0.5)]"
-                  title="Messages"
-                >
-                  <MessageSquare size={18} />
-                </Link>
-                <NotificationMenu />
-                <UserMenu user={{ id: user.id, name: user.name || undefined, email: user.email, image: user.image || undefined }} links={allLinks} />
-              </div>
-            ) : (
-              <>
-                <Link href="/login" className="text-sm font-medium text-white/70 hover:text-white transition-colors">
-                  Sign In
-                </Link>
-                <Link href="/signup" className="px-4 py-2 text-sm font-medium text-white bg-white/10 hover:bg-white/20 border border-white/20 rounded-full transition-all">
-                  Get Started
-                </Link>
-              </>
-            )}
-          </div>
+        {/* Auth Actions */}
+        <div className="flex items-center space-x-3 md:space-x-6">
+          {isPending ? (
+            <div className="w-8 h-8 rounded-full bg-white/10 animate-pulse" />
+          ) : user ? (
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => setSearchOpen(true)}
+                className="flex items-center justify-center w-10 h-10 rounded-full bg-white/10 border border-white/20 text-white/70 hover:text-white transition-all duration-300 hover:border-ugen-primary hover:shadow-[0_0_15px_rgba(99,102,241,0.5)]"
+                title="Search Users"
+              >
+                <Search size={18} />
+              </button>
+              <Link
+                href="/chat"
+                className="flex items-center justify-center w-10 h-10 rounded-full bg-white/10 border border-white/20 text-white/70 hover:text-white transition-all duration-300 hover:border-ugen-primary hover:shadow-[0_0_15px_rgba(99,102,241,0.5)]"
+                title="Messages"
+              >
+                <MessageSquare size={18} />
+              </Link>
+              <NotificationMenu />
+              <UserMenu user={{ id: user.id, name: user.name || undefined, email: user.email, image: user.image || undefined }} links={allLinks} />
+            </div>
+          ) : (
+            <>
+              <Link href="/login" className="text-sm font-medium text-white/70 hover:text-white transition-colors">
+                Sign In
+              </Link>
+              <Link href="/signup" className="px-4 py-2 text-sm font-medium text-white bg-white/10 hover:bg-white/20 border border-white/20 rounded-full transition-all">
+                Get Started
+              </Link>
+            </>
+          )}
+        </div>
       </div>
 
       <AnimatePresence>
