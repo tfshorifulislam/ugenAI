@@ -241,7 +241,7 @@ export const FeaturedGallery = () => {
         {/* Call To Action */}
         <FadeUp delay={0.4}>
           <div className="flex justify-center mt-8">
-            <Link href="/gallery" passHref>
+            <Link href="/ugen-gallery" passHref>
               <motion.div
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}

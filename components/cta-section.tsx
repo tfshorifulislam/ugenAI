@@ -84,7 +84,7 @@ export const CTASection = () => {
                   </Link>
 
                   {/* Secondary Button */}
-                  <Link href="/gallery" passHref className="w-full sm:w-auto">
+                  <Link href="/ugen-gallery" passHref className="w-full sm:w-auto">
                     <motion.div
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}

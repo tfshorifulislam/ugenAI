@@ -179,7 +179,7 @@ export const CategoriesSection = () => {
         {/* Call To Action */}
         <FadeUp delay={0.3}>
           <div className="flex justify-center">
-            <Link href="/categories" passHref>
+            <Link href="/ugen-gallery" passHref>
               <motion.div
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
