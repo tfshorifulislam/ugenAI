@@ -69,13 +69,12 @@ export function UserSearchModal({ onClose }: { onClose: () => void }) {
   }, [query]);
 
   return (
-    <div className="fixed inset-0 z-[150] flex items-start justify-center pt-[10vh] px-6">
+    <div onClick={onClose} className="fixed inset-0 z-[150] flex items-start justify-center pt-[10vh] px-6">
       {/* Backdrop */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        onClick={onClose}
         className="fixed inset-0 bg-black/80 backdrop-blur-sm"
       />
 
@@ -85,7 +84,7 @@ export function UserSearchModal({ onClose }: { onClose: () => void }) {
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: -20 }}
         transition={{ type: "spring", duration: 0.3 }}
-        className="relative w-full max-w-lg bg-ugen-bg/95 border border-white/10 rounded-2xl shadow-2xl overflow-hidden glass backdrop-blur-md z-[160]"
+        className="relative w-full max-w-lg bg-black/95 border border-white/10 rounded-xl shadow-2xl overflow-hidden backdrop-blur-md z-[160]"
       >
         {/* Header Input */}
         <div className="flex items-center gap-3 px-4 py-3.5 border-b border-white/10">
