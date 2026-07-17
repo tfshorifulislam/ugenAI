@@ -216,10 +216,10 @@ export function NotificationMenu() {
     <div className="relative" ref={menuRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center justify-center w-10 h-10 rounded-full bg-white/10 border border-white/20 text-white/70 hover:text-white transition-all duration-300 hover:border-ugen-primary hover:shadow-[0_0_15px_rgba(99,102,241,0.5)] relative group focus:outline-none"
+        className="flex items-center justify-center w-8 h-8 rounded-full bg-white/10 border border-white/20 text-white/70 hover:text-white transition-all duration-300 hover:border-ugen-primary hover:shadow-[0_0_15px_rgba(99,102,241,0.5)] relative group focus:outline-none"
         title="Notifications"
       >
-        <Bell size={18} className={isOpen ? "text-white" : "group-hover:text-white"} />
+        <Bell size={16} className={isOpen ? "text-white" : "group-hover:text-white"} />
         {unreadCount > 0 && (
           <span className="absolute -top-1 -right-1 flex items-center justify-center min-w-4 h-4 px-1 rounded-full bg-red-500 text-[10px] font-bold text-white shadow-lg border border-black border-opacity-50">
             {unreadCount > 99 ? "99+" : unreadCount}

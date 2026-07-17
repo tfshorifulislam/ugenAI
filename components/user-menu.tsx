@@ -61,7 +61,7 @@ export function UserMenu({ user, links }: { user: User; links?: LinkType[] }) {
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center gap-2 group focus:outline-none"
       >
-        <div className="relative flex items-center justify-center w-10 h-10 rounded-full bg-white/10 border border-white/20 overflow-hidden transition-all duration-300 group-hover:border-ugen-primary group-hover:shadow-[0_0_15px_rgba(99,102,241,0.5)]">
+        <div className="relative flex items-center justify-center w-8 h-8 rounded-full bg-white/10 border border-white/20 overflow-hidden transition-all duration-300 group-hover:border-ugen-primary group-hover:shadow-[0_0_15px_rgba(99,102,241,0.5)]">
           {user?.image ? (
             <img src={user.image} alt="User Avatar" className="w-full h-full object-cover" />
           ) : (

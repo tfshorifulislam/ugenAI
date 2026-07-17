@@ -77,17 +77,17 @@ export const Navbar = () => {
             <div className="flex items-center gap-3">
               <button
                 onClick={() => setSearchOpen(true)}
-                className="flex items-center justify-center w-10 h-10 rounded-full bg-white/10 border border-white/20 text-white/70 hover:text-white transition-all duration-300 hover:border-ugen-primary hover:shadow-[0_0_15px_rgba(99,102,241,0.5)]"
+                className="flex items-center justify-center w-8 h-8 rounded-full bg-white/10 border border-white/20 text-white/70 hover:text-white transition-all duration-300 hover:border-ugen-primary hover:shadow-[0_0_15px_rgba(99,102,241,0.5)]"
                 title="Search Users"
               >
-                <Search size={18} />
+                <Search size={16} />
               </button>
               <Link
                 href="/chat"
-                className="flex items-center justify-center w-10 h-10 rounded-full bg-white/10 border border-white/20 text-white/70 hover:text-white transition-all duration-300 hover:border-ugen-primary hover:shadow-[0_0_15px_rgba(99,102,241,0.5)]"
+                className="flex items-center justify-center w-8 h-8 rounded-full bg-white/10 border border-white/20 text-white/70 hover:text-white transition-all duration-300 hover:border-ugen-primary hover:shadow-[0_0_15px_rgba(99,102,241,0.5)]"
                 title="Messages"
               >
-                <MessageSquare size={18} />
+                <MessageSquare size={16} />
               </Link>
               <NotificationMenu />
               <UserMenu user={{ id: user.id, name: user.name || undefined, email: user.email, image: user.image || undefined }} links={allLinks} />
