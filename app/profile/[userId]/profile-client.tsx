@@ -1,6 +1,6 @@
 "use client";
 
-import { Eye, Image as ImageIcon, Calendar, Sparkles, MessageSquare, Loader2, Bookmark, Trash2 } from "lucide-react";
+import { Eye, Image as ImageIcon, Calendar, Sparkles, MessageSquare, Loader2, Bookmark, Trash2, AlertTriangle } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -9,6 +9,17 @@ import { LikeButton } from "@/components/like-button";
 import { PostViewTracker } from "@/components/post-view-tracker";
 import { PostType } from "@/components/gallery-card";
 import { useToast } from "@/contexts/toast-context";
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogMedia,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogCancel,
+  AlertDialogAction,
+} from "@/components/ui/alert-dialog";
 
 type UserType = {
   id: string;
@@ -34,17 +45,22 @@ export function ProfileClient({ user, posts, savedPosts, stats, joinDate, isOwne
   const [profilePosts, setProfilePosts] = useState(posts);
   const [activeTab, setActiveTab] = useState<"posts" | "saved">("posts");
   const [savedPostsState, setSavedPostsState] = useState(savedPosts || []);
+  const [postToDelete, setPostToDelete] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
   const { toast } = useToast();
 
-  const handleDelete = async (e: React.MouseEvent, postId: string) => {
+  const handleDelete = (e: React.MouseEvent, postId: string) => {
     e.preventDefault();
     e.stopPropagation();
+    setPostToDelete(postId);
+  };
 
-    const confirmed = window.confirm("Are you sure you want to delete this post? This action cannot be undone.");
-    if (!confirmed) return;
+  const confirmDelete = async () => {
+    if (!postToDelete) return;
+    setIsDeleting(true);
 
     try {
-      const res = await fetch(`/api/posts/${postId}`, {
+      const res = await fetch(`/api/posts/${postToDelete}`, {
         method: "DELETE",
       });
 
@@ -54,11 +70,14 @@ export function ProfileClient({ user, posts, savedPosts, stats, joinDate, isOwne
         throw new Error(data.error || "Failed to delete post");
       }
 
-      setProfilePosts((curr) => curr.filter((p) => p._id !== postId));
+      setProfilePosts((curr) => curr.filter((p) => p._id !== postToDelete));
       toast("Post deleted successfully.", "success");
+      setPostToDelete(null);
     } catch (err: unknown) {
       const errMsg = err instanceof Error ? err.message : "Failed to delete post";
       toast(errMsg, "error");
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -299,6 +318,37 @@ export function ProfileClient({ user, posts, savedPosts, stats, joinDate, isOwne
             ))}
           </motion.div>
         )}
+        {/* AlertDialog for delete confirmation */}
+        <AlertDialog open={postToDelete !== null} onOpenChange={(open) => !open && setPostToDelete(null)}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogMedia className="text-red-500 bg-red-500/10">
+                <AlertTriangle className="h-5 w-5" />
+              </AlertDialogMedia>
+              <AlertDialogTitle>Delete Post?</AlertDialogTitle>
+              <AlertDialogDescription>
+                Are you sure you want to delete this post? This action cannot be undone.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                variant="destructive"
+                disabled={isDeleting}
+                onClick={confirmDelete}
+              >
+                {isDeleting ? (
+                  <>
+                    <Loader2 className="animate-spin" />
+                    Deleting...
+                  </>
+                ) : (
+                  "Delete"
+                )}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </div>
   );
