@@ -4,13 +4,11 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, MessageSquare, Search } from "lucide-react";
+import { MessageSquare, Search } from "lucide-react";
 import { UserMenu } from "./user-menu";
 import { NotificationMenu } from "./notification-menu";
 import { UserSearchModal } from "./user-search-modal";
-import { useSession, signOut } from "@/lib/auth-client";
-import { useToast } from "@/contexts/toast-context";
-import { useRouter } from "next/navigation";
+import { useSession } from "@/lib/auth-client";
 
 const publicLinks = [
   { name: "Home", href: "/" },
@@ -24,11 +22,8 @@ const getPrivateLinks = (userId: string) => [
 ];
 
 export const Navbar = () => {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const pathname = usePathname();
-  const router = useRouter();
   const [searchOpen, setSearchOpen] = useState(false);
-  const { toast, success } = useToast();
 
   const { data: session, isPending } = useSession();
   const user = session?.user || null;
@@ -74,8 +69,8 @@ export const Navbar = () => {
             })}
           </nav>
 
-          {/* Auth Actions (Desktop) */}
-          <div className="hidden md:flex items-center space-x-6">
+          {/* Auth Actions */}
+          <div className="flex items-center space-x-3 md:space-x-6">
             {isPending ? (
               <div className="w-8 h-8 rounded-full bg-white/10 animate-pulse" />
             ) : user ? (
@@ -95,7 +90,7 @@ export const Navbar = () => {
                   <MessageSquare size={18} />
                 </Link>
                 <NotificationMenu />
-                <UserMenu user={{ id: user.id, name: user.name || undefined, email: user.email, image: user.image || undefined }} />
+                <UserMenu user={{ id: user.id, name: user.name || undefined, email: user.email, image: user.image || undefined }} links={allLinks} />
               </div>
             ) : (
               <>
@@ -108,127 +103,8 @@ export const Navbar = () => {
               </>
             )}
           </div>
-
-          {/* Mobile Menu Toggle */}
-          {user ? (
-            <button
-              className="md:hidden relative z-10 p-2 text-white/70 hover:text-white transition-colors"
-              onClick={() => setSearchOpen(true)}
-              title="Search Users"
-            >
-              <Search size={24} />
-            </button>
-          ) : (
-            <button
-              className="md:hidden relative z-10 p-2 text-white/70 hover:text-white transition-colors"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            >
-              {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-            </button>
-          )}
       </div>
 
-      {/* Mobile Menu */}
-      <AnimatePresence>
-        {mobileMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: -20, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -20, scale: 0.95 }}
-            transition={{ duration: 0.2 }}
-            className="absolute top-16 left-6 right-6 p-6 glass rounded-2xl md:hidden flex flex-col space-y-6"
-          >
-            <nav className="flex flex-col space-y-4">
-              {allLinks.map((link) => (
-                <Link
-                  key={link.name}
-                  href={link.href}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className={`text-lg font-medium transition-colors ${pathname === link.href ? "text-white" : "text-white/60"
-                    }`}
-                >
-                  {link.name}
-                </Link>
-              ))}
-            </nav>
-            <div className="h-[1px] w-full bg-white/10" />
-            <div className="flex flex-col space-y-4">
-              {user ? (
-                <>
-                  <div className="flex items-center gap-3 px-2 py-2 mb-2 border-b border-white/10">
-                    <div className="flex items-center justify-center w-10 h-10 rounded-full bg-white/10 border border-white/20 overflow-hidden">
-                      {user.image ? (
-                        <img src={user.image} alt="User Avatar" className="w-full h-full object-cover" />
-                      ) : (
-                        <span className="text-sm font-medium text-white">{user.name ? user.name.charAt(0).toUpperCase() : "U"}</span>
-                      )}
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-white">{user.name || "User"}</p>
-                      <p className="text-xs text-white/50">{user.email || "user@example.com"}</p>
-                    </div>
-                  </div>
-                  <Link
-                    href="/my-posts"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="text-lg font-medium text-white/60 hover:text-white"
-                  >
-                    My Posts
-                  </Link>
-                  <Link
-                    href="/settings"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="text-lg font-medium text-white/60 hover:text-white"
-                  >
-                    Settings
-                  </Link>
-                  <button
-                    onClick={async () => {
-                      setMobileMenuOpen(false);
-                      try {
-                        await signOut({
-                          fetchOptions: {
-                            onSuccess: () => {
-                              success("Logged out successfully");
-                              router.push("/");
-                            },
-                            onError: (ctx) => {
-                              toast(ctx.error.message || "Failed to log out", "error");
-                            }
-                          },
-                        });
-                      } catch (err: unknown) {
-                        const errMsg = err instanceof Error ? err.message : "Failed to log out";
-                        toast(errMsg, "error");
-                      }
-                    }}
-                    className="text-left text-lg font-medium text-red-400 hover:text-red-300 mt-2"
-                  >
-                    Logout
-                  </button>
-                </>
-              ) : (
-                <div className="flex flex-col gap-3">
-                  <Link
-                    href="/login"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="w-full text-center px-6 py-3 text-sm font-medium text-white/70 hover:text-white rounded-full transition-colors"
-                  >
-                    Login
-                  </Link>
-                  <Link
-                    href="/signup"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="w-full text-center px-6 py-3 text-sm font-medium text-white rounded-full bg-white/5 border border-white/10 hover:bg-white/10 transition-colors"
-                  >
-                    Sign Up
-                  </Link>
-                </div>
-              )}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
       <AnimatePresence>
         {searchOpen && <UserSearchModal onClose={() => setSearchOpen(false)} />}
       </AnimatePresence>

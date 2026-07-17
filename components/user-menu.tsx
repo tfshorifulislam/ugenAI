@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { User, Settings, LogOut, ChevronDown, Images } from "lucide-react";
+import { User, Settings, LogOut, ChevronDown, Images, Home, Compass, Sparkles, Paintbrush } from "lucide-react";
 import { signOut } from "@/lib/auth-client";
 import { useToast } from "@/contexts/toast-context";
 
@@ -15,7 +15,27 @@ type User = {
   image?: string;
 };
 
-export function UserMenu({ user }: { user: User }) {
+type LinkType = {
+  name: string;
+  href: string;
+};
+
+const getLinkIcon = (name: string) => {
+  switch (name.toLowerCase()) {
+    case "home":
+      return <Home size={16} />;
+    case "ugen-gallery":
+      return <Compass size={16} />;
+    case "learnai":
+      return <Sparkles size={16} />;
+    case "generate image":
+      return <Paintbrush size={16} />;
+    default:
+      return <Compass size={16} />;
+  }
+};
+
+export function UserMenu({ user, links }: { user: User; links?: LinkType[] }) {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
@@ -68,6 +88,25 @@ export function UserMenu({ user }: { user: User }) {
               <p className="text-xs text-white/50 truncate">{user?.email || "user@example.com"}</p>
             </div>
 
+            {links && links.length > 0 && (
+              <div className="flex flex-col gap-1 md:hidden border-b border-white/10 pb-2 mb-2">
+                {links.map((link) => {
+                  if (link.name.toLowerCase() === "profile") return null;
+                  return (
+                    <Link
+                      key={link.name}
+                      href={link.href}
+                      onClick={() => setIsOpen(false)}
+                      className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-white/70 hover:text-white hover:bg-white/10 rounded-xl transition-colors"
+                    >
+                      {getLinkIcon(link.name)}
+                      {link.name}
+                    </Link>
+                  );
+                })}
+              </div>
+            )}
+
             <Link href={user?.id ? `/profile/${user.id}` : "/"} onClick={() => setIsOpen(false)} className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-white/70 hover:text-white hover:bg-white/10 rounded-xl transition-colors">
               <Images size={16} />
               Profile
@@ -95,8 +134,9 @@ export function UserMenu({ user }: { user: User }) {
                       }
                     },
                   });
-                } catch (err: any) {
-                  toast(err.message || "Failed to log out", "error");
+                } catch (err: unknown) {
+                  const errMsg = err instanceof Error ? err.message : "Failed to log out";
+                  toast(errMsg, "error");
                 }
               }}
               className="w-full flex items-center gap-3 px-3 py-2 text-sm font-medium text-red-400 hover:text-red-300 hover:bg-red-400/10 rounded-xl transition-colors"
