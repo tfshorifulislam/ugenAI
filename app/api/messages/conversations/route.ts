@@ -18,7 +18,37 @@ export async function GET(req: NextRequest) {
       .sort({ updatedAt: -1 })
       .toArray();
 
-    return NextResponse.json({ conversations });
+    // Populate otherUser
+    const populatedConversations = await Promise.all(
+      conversations.map(async (conv) => {
+        const otherId = conv.participants.find((id: string) => id !== session.user.id);
+        if (!otherId) return conv;
+        let otherUser = {
+          id: otherId,
+          name: "Unknown User",
+        };
+        try {
+          if (ObjectId.isValid(otherId)) {
+            const userDoc = await db.collection("user").findOne({ _id: new ObjectId(otherId) });
+            if (userDoc) {
+              otherUser = {
+                id: userDoc._id.toString(),
+                name: userDoc.name || "Anonymous",
+                image: userDoc.image || undefined,
+              };
+            }
+          }
+        } catch (e) {
+          console.error("Failed to parse ObjectId for otherUser:", otherId);
+        }
+        return {
+          ...conv,
+          otherUser
+        };
+      })
+    );
+
+    return NextResponse.json({ conversations: populatedConversations });
   } catch (error: any) {
     console.error("Fetch Conversations Error:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });

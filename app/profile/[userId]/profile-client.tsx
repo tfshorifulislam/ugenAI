@@ -27,7 +27,8 @@ export function ProfileClient({ user, posts, stats, joinDate, isOwner }: Profile
         body: JSON.stringify({ userId: user.id }),
       });
       if (res.ok) {
-        router.push("/chat");
+        const data = await res.json();
+        router.push(`/chat?conversationId=${data.conversation._id}`);
       }
     } catch (error) {
       console.error(error);

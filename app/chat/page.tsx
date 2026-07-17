@@ -64,7 +64,18 @@ export default function ChatPage() {
 
   useEffect(() => {
     if (session?.user) {
-      fetchConversations();
+      fetchConversations().then((loadedConversations) => {
+        if (loadedConversations && !activeConversation) {
+          const urlParams = new URLSearchParams(window.location.search);
+          const convId = urlParams.get("conversationId");
+          if (convId) {
+            const conv = loadedConversations.find((c: Conversation) => c._id === convId);
+            if (conv) {
+              handleSelectConversation(conv);
+            }
+          }
+        }
+      });
     }
   }, [session]);
 
@@ -102,6 +113,7 @@ export default function ChatPage() {
       );
       
       setConversations(uniqueConversations);
+      return uniqueConversations;
     } catch (error) {
       if (!isPolling) toast("Failed to load conversations", "error");
     } finally {
