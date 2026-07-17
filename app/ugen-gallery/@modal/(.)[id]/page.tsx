@@ -4,6 +4,8 @@ import { notFound } from "next/navigation";
 import { headers } from "next/headers";
 import { PostDetails } from "@/components/post-details";
 import { Modal } from "@/components/modal";
+import { RelatedPosts } from "@/components/related-posts";
+import { PostType } from "@/components/gallery-card";
 
 export default async function GalleryPostModal({
   params,
@@ -28,9 +30,22 @@ export default async function GalleryPostModal({
     isLiked: userId ? (post.likedBy || []).includes(userId) : false,
   };
 
+  const relatedPostsRaw = await db.collection("posts")
+    .find({ status: "published", _id: { $ne: new ObjectId(id) } })
+    .sort({ createdAt: -1 })
+    .limit(8)
+    .toArray();
+
+  const relatedPosts = relatedPostsRaw.map(rp => ({
+    ...rp,
+    _id: rp._id.toString(),
+    isLiked: userId ? (rp.likedBy || []).includes(userId) : false,
+  })) as unknown as PostType[];
+
   return (
     <Modal>
       <PostDetails post={serializedPost} />
+      <RelatedPosts initialPosts={relatedPosts} />
     </Modal>
   );
 }

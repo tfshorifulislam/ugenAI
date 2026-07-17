@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { Eye, Sparkles, Share2 } from "lucide-react";
+import { Eye, Sparkles, Share2, Copy, Check } from "lucide-react";
+import { useState } from "react";
 import { LikeButton } from "@/components/like-button";
 
 type PostType = {
@@ -21,6 +22,16 @@ type PostType = {
 };
 
 export function PostDetails({ post }: { post: PostType }) {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = () => {
+    if (post.description) {
+      navigator.clipboard.writeText(post.description);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
   return (
     <div className="glass rounded-3xl overflow-hidden border border-white/10 flex flex-col md:flex-row shadow-2xl">
       {/* Image Section */}
@@ -67,7 +78,16 @@ export function PostDetails({ post }: { post: PostType }) {
 
         {post.description && (
           <div className="mb-6">
-            <h3 className="text-sm font-medium text-white/50 uppercase tracking-wider mb-2">Prompt Details</h3>
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="text-sm font-medium text-white/50 uppercase tracking-wider">Prompt Details</h3>
+              <button 
+                onClick={handleCopy}
+                className="flex items-center gap-1.5 text-xs font-medium text-white/60 hover:text-white transition-colors bg-white/5 hover:bg-white/10 px-2.5 py-1 rounded-md"
+              >
+                {copied ? <Check size={14} className="text-green-400" /> : <Copy size={14} />}
+                {copied ? <span className="text-green-400">Copied!</span> : <span>Copy</span>}
+              </button>
+            </div>
             <p className="text-white/80 text-sm md:text-base leading-relaxed bg-black/20 p-4 rounded-xl border border-white/5">
               {post.description}
             </p>
