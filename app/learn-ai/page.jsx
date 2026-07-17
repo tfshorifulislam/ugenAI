@@ -15,7 +15,7 @@ const courses = [
     duration: "15 min",
     image:
       "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=1200&q=80",
-    slug: "introduction-to-ai-prompting",
+     url: "https://ai.google.dev/gemini-api/docs/prompting-strategies",
   },
   {
     id: 2,
@@ -27,7 +27,7 @@ const courses = [
     duration: "20 min",
     image:
       "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=1200&q=80",
-    slug: "writing-better-image-prompts",
+     url: "https://developers.google.com/machine-learning/resources",
   },
   {
     id: 3,
@@ -39,7 +39,7 @@ const courses = [
     duration: "18 min",
     image:
       "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=1200&q=80",
-    slug: "mastering-chatgpt-prompts",
+     url: "https://ai.google.dev/gemini-api/docs/text-generation",
   },
   {
     id: 4,
@@ -51,7 +51,7 @@ const courses = [
     duration: "25 min",
     image:
       "https://images.unsplash.com/photo-1518770660439-4636190af475?w=1200&q=80",
-    slug: "prompt-chaining-techniques",
+     url: "https://developers.google.com/machine-learning",
   },
   {
     id: 5,
@@ -63,25 +63,13 @@ const courses = [
     duration: "22 min",
     image:
       "https://images.unsplash.com/photo-1555949963-aa79dcee981c?w=1200&q=80",
-    slug: "creating-consistent-ai-characters",
-  },
-  {
-    id: 6,
-    title: "AI Workflow for Creators",
-    description:
-      "Build an efficient workflow using ChatGPT, FLUX, image editors, and automation.",
-    category: "Productivity",
-    level: "Advanced",
-    duration: "35 min",
-    image:
-      "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=1200&q=80",
-    slug: "ai-workflow-for-creators",
+     url: "https://grow.google/ai/",
   },
 ];
 
 export default function LearnAIPage() {
   return (
-    <main className="min-h-screen bg-black text-white">
+    <main className="min-h-screen bg-linear-to-b from-ugen-bg/80 via-ugen-bg/90 to-ugen-bg text-white">
       {/* Hero */}
       <section className="border-b border-white/10">
         <div className="mx-auto max-w-7xl px-6 py-20 text-center">
@@ -144,7 +132,7 @@ export default function LearnAIPage() {
                   </div>
 
                   <Link
-                    href={`/learn-ai/${course.slug}`}
+                     href={course.url}
                     className="flex items-center gap-2 text-sm font-medium text-violet-400 transition hover:text-violet-300"
                   >
                     Read Article
