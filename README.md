@@ -1,36 +1,150 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ugenAI 🚀
 
-## Getting Started
+![ugenAI Banner](/public/screenshots/home.png)
 
-First, run the development server:
+## 🌐 Live Website
+
+🔗 https://ugenai.vercel.app/
+
+---
+
+## 📌 About The Project
+
+ugenAI is an AI-powered image generation and creative sharing platform where users can generate, explore, and share AI-generated artwork.
+
+Users can create images using AI prompts, publish their creations, interact with other creators through likes, comments, saves, notifications, and messaging features.
+
+The platform is designed with a modern social-media style experience inspired by platforms like Facebook and Pinterest.
+
+---
+
+## ✨ Features
+
+### 🔐 Authentication
+- User registration and login
+- Secure authentication system
+- User profile management
+- Protected routes
+
+---
+
+### 🤖 AI Image Generation
+- Generate images using AI prompts
+- AI model integration with Pollinations AI
+- FLUX.1-schnell image generation model
+- Save generated images to gallery
+
+---
+
+### 🎨 AI Gallery
+- Explore AI-generated images
+- View image details
+- Search creative works
+- Filter content by categories
+- User-generated AI artwork sharing
+
+---
+
+### 👤 User Profile
+- Dynamic user profiles
+- View user's generated posts
+- Profile customization
+- Delete own posts
+- Social media style profile layout
+
+---
+
+### ❤️ Social Features
+- Like posts
+- Save favorite images
+- Comment system
+- View count tracking
+- User notifications
+
+---
+
+### 💬 Messaging System
+- User-to-user messaging
+- Chat interface
+- Message notifications
+
+---
+
+### 🔔 Notification System
+- Like notifications
+- Comment notifications
+- Save notifications
+- Message notifications
+- Real-time notification updates
+
+---
+
+## 🖼️ Screenshots
+
+### Home Page
+
+![Home Page](YOUR_IMAGE_URL_HERE)
+
+
+### AI Generator
+
+![AI Generator](YOUR_IMAGE_URL_HERE)
+
+
+### Gallery
+
+![Gallery](YOUR_IMAGE_URL_HERE)
+
+
+### Profile
+
+![Profile](YOUR_IMAGE_URL_HERE)
+
+---
+
+## 🛠️ Technologies Used
+
+### Frontend
+- Next.js 16
+- React.js
+- TypeScript
+- Tailwind CSS
+- Framer Motion
+- Lucide React
+- Shadcn UI
+
+### Backend
+- Node.js
+- Express.js
+- REST API
+
+### Database
+- MongoDB
+- MongoDB Atlas
+
+### Authentication
+- Better Auth
+
+### AI Integration
+- Pollinations AI
+- FLUX.1-schnell Model
+
+
+
+---
+
+## ⚙️ Installation & Setup
+
+Clone the repository:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+git clone YOUR_GITHUB_REPOSITORY_URL
+cd ugenai
+npm install
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+NEXT_PUBLIC_APP_URL=
+DATABASE_URL=
+AUTH_SECRET=
+AI_API_URL=
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+npm run dev;
