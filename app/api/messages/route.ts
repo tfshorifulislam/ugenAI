@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth, mongoClient } from "@/lib/auth";
 import { ObjectId } from "mongodb";
+import { createNotification } from "@/lib/notifications";
 
 export async function POST(req: NextRequest) {
   try {
@@ -55,6 +56,15 @@ export async function POST(req: NextRequest) {
         } 
       }
     );
+
+    // Trigger Notification
+    await createNotification({
+      receiverId,
+      senderId: session.user.id,
+      type: "message",
+      text: `${session.user.name || "Someone"} sent you a message`,
+      messageId: conversationId, // passing conversationId as messageId for easy routing to chat
+    });
 
     return NextResponse.json({ message: messageRecord }, { status: 201 });
   } catch (error: any) {
