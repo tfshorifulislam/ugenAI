@@ -79,29 +79,6 @@ The platform is designed with a modern social-media style experience inspired by
 
 ---
 
-## 🖼️ Screenshots
-
-### Home Page
-
-![Home Page](YOUR_IMAGE_URL_HERE)
-
-
-### AI Generator
-
-![AI Generator](YOUR_IMAGE_URL_HERE)
-
-
-### Gallery
-
-![Gallery](YOUR_IMAGE_URL_HERE)
-
-
-### Profile
-
-![Profile](YOUR_IMAGE_URL_HERE)
-
----
-
 ## 🛠️ Technologies Used
 
 ### Frontend
