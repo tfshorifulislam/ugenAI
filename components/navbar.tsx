@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X } from "lucide-react";
+import { Menu, X, MessageSquare, Bell } from "lucide-react";
 import { UserMenu } from "./user-menu";
 import { useSession, signOut } from "@/lib/auth-client";
 import { useToast } from "@/contexts/toast-context";
@@ -77,7 +77,22 @@ export const Navbar = () => {
             {isPending ? (
               <div className="w-8 h-8 rounded-full bg-white/10 animate-pulse" />
             ) : user ? (
-              <UserMenu user={{ id: user.id, name: user.name || undefined, email: user.email, image: user.image || undefined }} />
+              <div className="flex items-center gap-3">
+                <Link 
+                  href="/chat" 
+                  className="flex items-center justify-center w-10 h-10 rounded-full bg-white/10 border border-white/20 text-white/70 hover:text-white transition-all duration-300 hover:border-ugen-primary hover:shadow-[0_0_15px_rgba(99,102,241,0.5)]"
+                  title="Messages"
+                >
+                  <MessageSquare size={18} />
+                </Link>
+                <button 
+                  className="flex items-center justify-center w-10 h-10 rounded-full bg-white/10 border border-white/20 text-white/70 hover:text-white transition-all duration-300 hover:border-ugen-primary hover:shadow-[0_0_15px_rgba(99,102,241,0.5)]"
+                  title="Notifications"
+                >
+                  <Bell size={18} />
+                </button>
+                <UserMenu user={{ id: user.id, name: user.name || undefined, email: user.email, image: user.image || undefined }} />
+              </div>
             ) : (
               <>
                 <Link href="/login" className="text-sm font-medium text-white/70 hover:text-white transition-colors">
