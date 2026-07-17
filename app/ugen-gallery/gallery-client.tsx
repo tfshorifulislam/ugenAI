@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import {  Sparkles, Search } from "lucide-react";
+import { Sparkles, Search } from "lucide-react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { GalleryCard } from "@/components/gallery-card";
@@ -26,17 +26,41 @@ export function GalleryClient({ initialPosts }: { initialPosts: Post[] }) {
   const [posts, setPosts] = useState(initialPosts);
   const [searchQuery, setSearchQuery] = useState("");
 
+  const [selectedCategory, setSelectedCategory] = useState("All");
+
+  const categories = [
+    "All",
+    ...new Set(posts.map((post) => post.category)),
+  ];
+
   const filteredPosts = posts.filter((post) => {
     const query = searchQuery.trim().toLowerCase();
-    if (!query) return true;
 
-    const matchTitle = post.title?.toLowerCase().includes(query);
-    const matchDesc = post.description?.toLowerCase().includes(query);
-    const matchCategory = post.category?.toLowerCase().includes(query);
-    const matchTags = post.tags?.some((tag) => tag.toLowerCase().includes(query));
+    const matchesSearch =
+      !query ||
+      post.title?.toLowerCase().includes(query) ||
+      post.description?.toLowerCase().includes(query) ||
+      post.category?.toLowerCase().includes(query) ||
+      post.tags?.some((tag) => tag.toLowerCase().includes(query));
 
-    return matchTitle || matchDesc || matchCategory || matchTags;
+    const matchesCategory =
+      selectedCategory === "All" ||
+      post.category === selectedCategory;
+
+    return matchesSearch && matchesCategory;
   });
+
+  // const filteredPosts = posts.filter((post) => {
+  //   const query = searchQuery.trim().toLowerCase();
+  //   if (!query) return true;
+
+  //   const matchTitle = post.title?.toLowerCase().includes(query);
+  //   const matchDesc = post.description?.toLowerCase().includes(query);
+  //   const matchCategory = post.category?.toLowerCase().includes(query);
+  //   const matchTags = post.tags?.some((tag) => tag.toLowerCase().includes(query));
+
+  //   return matchTitle || matchDesc || matchCategory || matchTags;
+  // });
 
   return (
     <>
@@ -63,6 +87,24 @@ export function GalleryClient({ initialPosts }: { initialPosts: Post[] }) {
           )}
         </div>
       </div>
+      
+      {/* filter bar */}
+      <div className="flex flex-wrap gap-2 mb-8">
+        {categories.map((category) => (
+          <button
+            key={category}
+            onClick={() => setSelectedCategory(category)}
+            className={`px-4 py-2 rounded-full text-sm transition-all ${selectedCategory === category
+                ? "bg-ugen-primary text-white"
+                : "bg-white/5 text-white/70 hover:bg-white/10"
+              }`}
+          >
+            {category}
+          </button>
+        ))}
+      </div>
+
+
 
       {/* Gallery */}
       {posts.length === 0 ? (
@@ -98,12 +140,12 @@ export function GalleryClient({ initialPosts }: { initialPosts: Post[] }) {
         >
           <AnimatePresence>
             {filteredPosts.map((post) => (
-              <GalleryCard 
-                key={post._id} 
-                post={post} 
+              <GalleryCard
+                key={post._id}
+                post={post}
                 onUpdateViewCount={(views) => {
                   setPosts(current => current.map(p => p._id === post._id ? { ...p, views } : p));
-                }} 
+                }}
               />
             ))}
           </AnimatePresence>
