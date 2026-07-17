@@ -1,6 +1,6 @@
 # ugenAI 🚀
 
-![ugenAI Banner](/public/screenshots/home.png)
+<img width="1906" height="950" alt="home png" src="https://github.com/user-attachments/assets/e0c6a684-29ac-49da-8f73-e4d5b26694ca" />
 
 ## 🌐 Live Website
 
