@@ -81,7 +81,7 @@ export function UserMenu({ user, links }: { user: User; links?: LinkType[] }) {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.95 }}
             transition={{ duration: 0.2, ease: "easeOut" }}
-            className="absolute right-0 mt-3 w-56 p-2 rounded-2xl bg-ugen-bg/95 backdrop-blur-xl border border-white/10 shadow-2xl origin-top-right z-50 flex flex-col gap-1"
+            className="absolute right-0 mt-3 w-56 p-2 rounded-2xl glass border border-white/10 shadow-2xl origin-top-right z-50 flex flex-col gap-1"
           >
             <div className="px-3 py-2 mb-2 border-b border-white/10">
               <p className="text-sm font-medium text-white truncate">{user?.name || "User"}</p>

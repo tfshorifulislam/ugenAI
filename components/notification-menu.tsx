@@ -234,7 +234,7 @@ export function NotificationMenu() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.95 }}
             transition={{ duration: 0.2, ease: "easeOut" }}
-            className="absolute right-[-12px] sm:right-0 mt-3 w-[calc(100vw-32px)] sm:w-80 p-2 rounded-2xl glass border border-white/10 shadow-2xl origin-top-right z-50 flex flex-col"
+            className="absolute right-0 mt-3 w-[calc(100vw-48px)] sm:w-80 p-2 rounded-2xl bg-ugen-bg/95 backdrop-blur-xl border border-white/10 shadow-2xl origin-top-right z-50 flex flex-col"
           >
             <div className="flex items-center justify-between px-3 py-2 mb-2 border-b border-white/10">
               <h3 className="text-sm font-bold text-white">Notifications</h3>
