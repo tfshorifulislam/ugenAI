@@ -1,6 +1,6 @@
 "use client";
 
-import { Eye, Image as ImageIcon, Calendar, Sparkles, MessageSquare, Loader2, Bookmark } from "lucide-react";
+import { Eye, Image as ImageIcon, Calendar, Sparkles, MessageSquare, Loader2, Bookmark, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -8,6 +8,7 @@ import { motion } from "framer-motion";
 import { LikeButton } from "@/components/like-button";
 import { PostViewTracker } from "@/components/post-view-tracker";
 import { PostType } from "@/components/gallery-card";
+import { useToast } from "@/contexts/toast-context";
 
 type UserType = {
   id: string;
@@ -33,6 +34,33 @@ export function ProfileClient({ user, posts, savedPosts, stats, joinDate, isOwne
   const [profilePosts, setProfilePosts] = useState(posts);
   const [activeTab, setActiveTab] = useState<"posts" | "saved">("posts");
   const [savedPostsState, setSavedPostsState] = useState(savedPosts || []);
+  const { toast } = useToast();
+
+  const handleDelete = async (e: React.MouseEvent, postId: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const confirmed = window.confirm("Are you sure you want to delete this post? This action cannot be undone.");
+    if (!confirmed) return;
+
+    try {
+      const res = await fetch(`/api/posts/${postId}`, {
+        method: "DELETE",
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to delete post");
+      }
+
+      setProfilePosts((curr) => curr.filter((p) => p._id !== postId));
+      toast("Post deleted successfully.", "success");
+    } catch (err: unknown) {
+      const errMsg = err instanceof Error ? err.message : "Failed to delete post";
+      toast(errMsg, "error");
+    }
+  };
 
   const handleMessage = async () => {
     setIsMessaging(true);
@@ -249,6 +277,15 @@ export function ProfileClient({ user, posts, savedPosts, stats, joinDate, isOwne
                   />
                   
                   <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center gap-3">
+                    {isOwner && activeTab === "posts" && (
+                      <button
+                        onClick={(e) => handleDelete(e, post._id)}
+                        className="absolute top-3 right-3 p-2 bg-red-600 hover:bg-red-700 text-white rounded-full transition-colors shadow-md pointer-events-auto"
+                        title="Delete Post"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    )}
                     <h4 className="text-white font-bold text-lg text-center px-4 line-clamp-1">{post.title}</h4>
                     <div className="flex items-center gap-6 text-white font-medium">
                       <div onClick={(e) => e.stopPropagation()}>
