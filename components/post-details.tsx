@@ -5,6 +5,7 @@ import { Eye, Sparkles, Share2, Copy, Check } from "lucide-react";
 import { useState } from "react";
 import { LikeButton } from "@/components/like-button";
 import { SaveButton } from "@/components/save-button";
+import { useToast } from "@/contexts/toast-context";
 
 type PostType = {
   _id: string;
@@ -21,16 +22,28 @@ type PostType = {
   views: number;
   isLiked: boolean;
   isSaved?: boolean;
+  prompt?: string;
 };
 
 export function PostDetails({ post }: { post: PostType }) {
   const [copied, setCopied] = useState(false);
+  const [promptCopied, setPromptCopied] = useState(false);
+  const { toast } = useToast();
 
   const handleCopy = () => {
     if (post.description) {
       navigator.clipboard.writeText(post.description);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
+  const handleCopyPrompt = () => {
+    if (post.prompt) {
+      navigator.clipboard.writeText(post.prompt);
+      setPromptCopied(true);
+      toast("Prompt copied!", "success");
+      setTimeout(() => setPromptCopied(false), 2000);
     }
   };
 
@@ -105,6 +118,26 @@ export function PostDetails({ post }: { post: PostType }) {
                   #{tag}
                 </span>
               ))}
+            </div>
+          </div>
+        )}
+
+        {post.prompt && (
+          <div className="mb-8">
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="text-sm font-medium text-white/50 uppercase tracking-wider">Prompt</h3>
+              <button 
+                onClick={handleCopyPrompt}
+                className="flex items-center gap-1.5 text-xs font-medium text-white/60 hover:text-white transition-colors bg-white/5 hover:bg-white/10 px-2.5 py-1 rounded-md"
+              >
+                {promptCopied ? <Check size={14} className="text-green-400" /> : <Copy size={14} />}
+                {promptCopied ? <span className="text-green-400">Copied!</span> : <span>Copy</span>}
+              </button>
+            </div>
+            <div className="bg-black/20 p-4 rounded-xl border border-white/5 max-h-32 overflow-y-auto custom-scrollbar">
+              <p className="text-white/80 text-sm leading-relaxed whitespace-pre-wrap select-all">
+                {post.prompt}
+              </p>
             </div>
           </div>
         )}

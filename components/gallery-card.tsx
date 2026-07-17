@@ -21,6 +21,7 @@ export type PostType = {
   views: number;
   isLiked: boolean;
   isSaved?: boolean;
+  prompt?: string;
 };
 
 export function GalleryCard({ 
