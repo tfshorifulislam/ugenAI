@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Eye, Sparkles, Share2, Copy, Check } from "lucide-react";
 import { useState } from "react";
 import { LikeButton } from "@/components/like-button";
+import { SaveButton } from "@/components/save-button";
 
 type PostType = {
   _id: string;
@@ -19,6 +20,7 @@ type PostType = {
   likes: number;
   views: number;
   isLiked: boolean;
+  isSaved?: boolean;
 };
 
 export function PostDetails({ post }: { post: PostType }) {
@@ -61,9 +63,10 @@ export function PostDetails({ post }: { post: PostType }) {
           </Link>
 
           <div className="flex items-center gap-2">
-            <button className="w-10 h-10 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/10 text-white transition-colors">
+            <button className="w-10 h-10 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/10 text-white transition-colors" title="Share">
               <Share2 size={18} />
             </button>
+            <SaveButton postId={post._id} initialIsSaved={post.isSaved || false} />
           </div>
         </div>
 

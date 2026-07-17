@@ -24,10 +24,17 @@ export default async function GalleryPostModal({
 
   if (!post || post.status !== "published") return notFound();
 
+  let isSaved = false;
+  if (userId) {
+    const savedDoc = await db.collection("saved").findOne({ userId, imageId: id });
+    isSaved = !!savedDoc;
+  }
+
   const serializedPost = {
     ...post,
     _id: post._id.toString(),
     isLiked: userId ? (post.likedBy || []).includes(userId) : false,
+    isSaved,
   };
 
   const relatedPostsRaw = await db.collection("posts")

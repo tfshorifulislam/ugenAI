@@ -1,25 +1,38 @@
 "use client";
 
-import { Eye, Image as ImageIcon, Calendar, Sparkles, MessageSquare, Loader2 } from "lucide-react";
+import { Eye, Image as ImageIcon, Calendar, Sparkles, MessageSquare, Loader2, Bookmark } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { LikeButton } from "@/components/like-button";
 import { PostViewTracker } from "@/components/post-view-tracker";
+import { PostType } from "@/components/gallery-card";
+
+type UserType = {
+  id: string;
+  name?: string;
+  image?: string;
+  createdAt?: string;
+  bio?: string;
+  email?: string;
+};
 
 type ProfileProps = {
-  user: any;
-  posts: any[];
-  stats: any;
+  user: UserType;
+  posts: PostType[];
+  savedPosts?: PostType[];
+  stats: Record<string, number>;
   joinDate: string;
   isOwner?: boolean;
 };
 
-export function ProfileClient({ user, posts, stats, joinDate, isOwner }: ProfileProps) {
+export function ProfileClient({ user, posts, savedPosts, stats, joinDate, isOwner }: ProfileProps) {
   const router = useRouter();
   const [isMessaging, setIsMessaging] = useState(false);
   const [profilePosts, setProfilePosts] = useState(posts);
+  const [activeTab, setActiveTab] = useState<"posts" | "saved">("posts");
+  const [savedPostsState, setSavedPostsState] = useState(savedPosts || []);
 
   const handleMessage = async () => {
     setIsMessaging(true);
@@ -128,21 +141,43 @@ export function ProfileClient({ user, posts, stats, joinDate, isOwner }: Profile
           </div>
         </motion.div>
 
-        {/* Posts Section Title */}
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.3 }}
-          className="flex items-center justify-center mb-8 border-b border-white/10 pb-4"
-        >
-          <div className="flex items-center gap-2 text-white font-medium px-4 py-2 border-b-2 border-ugen-primary">
-            <ImageIcon size={18} />
-            {isOwner ? "My Posts" : "Published Posts"}
+        {/* Tab Selection */}
+        {isOwner ? (
+          <div className="flex items-center justify-center gap-6 mb-8 border-b border-white/10 pb-4">
+            <button
+              onClick={() => setActiveTab("posts")}
+              className={`flex items-center gap-2 font-medium px-4 py-2 border-b-2 transition-all ${
+                activeTab === "posts"
+                  ? "text-white border-ugen-primary"
+                  : "text-white/60 border-transparent hover:text-white"
+              }`}
+            >
+              <ImageIcon size={18} />
+              My Posts
+            </button>
+            <button
+              onClick={() => setActiveTab("saved")}
+              className={`flex items-center gap-2 font-medium px-4 py-2 border-b-2 transition-all ${
+                activeTab === "saved"
+                  ? "text-white border-ugen-primary"
+                  : "text-white/60 border-transparent hover:text-white"
+              }`}
+            >
+              <Bookmark size={18} />
+              Saved
+            </button>
           </div>
-        </motion.div>
+        ) : (
+          <div className="flex items-center justify-center mb-8 border-b border-white/10 pb-4">
+            <div className="flex items-center gap-2 text-white font-medium px-4 py-2 border-b-2 border-ugen-primary">
+              <ImageIcon size={18} />
+              Published Posts
+            </div>
+          </div>
+        )}
 
         {/* Posts Grid */}
-        {profilePosts.length === 0 ? (
+        {activeTab === "posts" && profilePosts.length === 0 ? (
           <motion.div 
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -154,7 +189,7 @@ export function ProfileClient({ user, posts, stats, joinDate, isOwner }: Profile
             <h3 className="text-2xl font-bold text-white mb-2">No Posts Yet</h3>
             {isOwner ? (
               <>
-                <p className="text-white/50 mb-8 max-w-md text-center">You haven't published any AI images yet. Start generating and share your creativity!</p>
+                <p className="text-white/50 mb-8 max-w-md text-center">You haven&apos;t published any AI images yet. Start generating and share your creativity!</p>
                 <Link 
                   href="/generate-image"
                   className="px-6 py-3 bg-gradient-to-r from-ugen-primary to-ugen-accent text-white font-medium rounded-full shadow-lg shadow-ugen-primary/20 hover:scale-105 transition-transform"
@@ -163,8 +198,26 @@ export function ProfileClient({ user, posts, stats, joinDate, isOwner }: Profile
                 </Link>
               </>
             ) : (
-              <p className="text-white/50 mb-8 max-w-md text-center">This user hasn't published any AI images yet.</p>
+              <p className="text-white/50 mb-8 max-w-md text-center">This user hasn&apos;t published any AI images yet.</p>
             )}
+          </motion.div>
+        ) : activeTab === "saved" && savedPostsState.length === 0 ? (
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="flex flex-col items-center justify-center py-20"
+          >
+            <div className="w-24 h-24 bg-white/5 rounded-full flex items-center justify-center mb-6">
+              <Bookmark className="w-10 h-10 text-white/30" />
+            </div>
+            <h3 className="text-2xl font-bold text-white mb-2">No Saved Images</h3>
+            <p className="text-white/50 mb-8 max-w-md text-center">You haven&apos;t saved any AI images yet. Explore the gallery to bookmark your favorites!</p>
+            <Link 
+              href="/ugen-gallery"
+              className="px-6 py-3 bg-gradient-to-r from-ugen-primary to-ugen-accent text-white font-medium rounded-full shadow-lg shadow-ugen-primary/20 hover:scale-105 transition-transform"
+            >
+              Explore Gallery
+            </Link>
           </motion.div>
         ) : (
           <motion.div 
@@ -173,10 +226,10 @@ export function ProfileClient({ user, posts, stats, joinDate, isOwner }: Profile
             animate="show"
             className="grid grid-cols-2 md:grid-cols-3 gap-1 md:gap-4"
           >
-            {profilePosts.map((post: any) => (
+            {(activeTab === "posts" ? profilePosts : savedPostsState).map((post: PostType) => (
               <motion.div variants={itemVariants} key={post._id}>
                 <Link 
-                  href={`/post/${post._id}`} 
+                  href={`/ugen-gallery/${post._id}`} 
                   className="group relative aspect-square bg-black/40 overflow-hidden md:rounded-2xl border border-transparent md:border-white/5 hover:border-white/20 transition-all cursor-pointer block h-full w-full"
                 >
                   <img
@@ -187,14 +240,20 @@ export function ProfileClient({ user, posts, stats, joinDate, isOwner }: Profile
                   <PostViewTracker 
                     postId={post._id} 
                     onUpdate={(views) => {
-                      setProfilePosts(current => current.map(p => p._id === post._id ? { ...p, views } : p));
+                      if (activeTab === "posts") {
+                        setProfilePosts(current => current.map(p => p._id === post._id ? { ...p, views } : p));
+                      } else {
+                        setSavedPostsState(current => current.map(p => p._id === post._id ? { ...p, views } : p));
+                      }
                     }} 
                   />
                   
                   <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center gap-3">
                     <h4 className="text-white font-bold text-lg text-center px-4 line-clamp-1">{post.title}</h4>
                     <div className="flex items-center gap-6 text-white font-medium">
-                      <LikeButton postId={post._id} initialLikes={post.likes || 0} initialIsLiked={post.isLiked || false} />
+                      <div onClick={(e) => e.stopPropagation()}>
+                        <LikeButton postId={post._id} initialLikes={post.likes || 0} initialIsLiked={post.isLiked || false} />
+                      </div>
                       <span className="flex items-center gap-2"><Eye size={20} /> {post.views}</span>
                     </div>
                   </div>
