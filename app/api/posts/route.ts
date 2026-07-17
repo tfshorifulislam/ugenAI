@@ -9,24 +9,33 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { pollinationsUrl, prompt, title, category, description, tags } = body;
+    const { pollinationsUrl, base64Image, prompt, title, category, description, tags } = body;
 
-    if (!pollinationsUrl || !prompt || !title) {
+    if ((!pollinationsUrl && !base64Image) || !title) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
-    // Fetch the image from Pollinations to convert to base64 for ImgBB
-    const imgRes = await fetch(pollinationsUrl);
-    if (!imgRes.ok) {
-      throw new Error("Failed to fetch image from Pollinations AI");
+    let finalBase64Image = base64Image;
+
+    // Fetch the image from Pollinations to convert to base64 for ImgBB if no manual image provided
+    if (pollinationsUrl && !finalBase64Image) {
+      const imgRes = await fetch(pollinationsUrl);
+      if (!imgRes.ok) {
+        throw new Error("Failed to fetch image from Pollinations AI");
+      }
+      const buffer = await imgRes.arrayBuffer();
+      finalBase64Image = Buffer.from(buffer).toString("base64");
     }
-    const buffer = await imgRes.arrayBuffer();
-    const base64Image = Buffer.from(buffer).toString("base64");
+
+    // Strip data URL prefix if present in the manually uploaded image
+    if (finalBase64Image && finalBase64Image.includes(",")) {
+      finalBase64Image = finalBase64Image.split(",")[1];
+    }
 
     // Upload to ImgBB
     const imgbbForm = new FormData();
     imgbbForm.append("key", process.env.IMAGEBB_API || "");
-    imgbbForm.append("image", base64Image);
+    imgbbForm.append("image", finalBase64Image);
 
     const imgbbRes = await fetch("https://api.imgbb.com/1/upload", {
       method: "POST",
@@ -49,10 +58,10 @@ export async function POST(req: NextRequest) {
       userName: session.user.name || "Anonymous",
       userImage: session.user.image || null,
       image: imgbbUrl,
-      prompt,
+      prompt: prompt || "Uploaded Image",
       title,
       category: category || "General",
-      aiModel: "Pollinations AI",
+      aiModel: pollinationsUrl ? "Pollinations AI" : "Manual Upload",
       description: description || "",
       tags: tags ? tags.split(",").map((t: string) => t.trim()).filter(Boolean) : [],
       likes: 0,

@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "@/lib/auth-client";
 import { motion } from "framer-motion";
-import { Loader2, Image as ImageIcon, Sparkles, Send } from "lucide-react";
+import { Loader2, Image as ImageIcon, Sparkles, Send, Upload } from "lucide-react";
 import { useToast } from "@/contexts/toast-context";
 
 export default function GenerateImagePage() {
@@ -14,6 +14,7 @@ export default function GenerateImagePage() {
 
   const [prompt, setPrompt] = useState("");
   const [pollinationsUrl, setPollinationsUrl] = useState<string | null>(null);
+  const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   
   const [title, setTitle] = useState("");
@@ -44,16 +45,39 @@ export default function GenerateImagePage() {
     }
     
     setIsGenerating(true);
+    setUploadedImage(null); // Clear uploaded image if generating
     // Add random seed to allow generating different images for the same prompt
     const seed = Math.floor(Math.random() * 1000000);
     const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=1024&height=1024&nologo=true&seed=${seed}`;
     setPollinationsUrl(url);
   };
 
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast("Image must be smaller than 5MB", "error");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      setUploadedImage(event.target?.result as string);
+      setPollinationsUrl(null); // Clear generated image if uploading
+      setIsGenerating(false);
+    };
+    reader.readAsDataURL(file);
+  };
+
   const handlePublish = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!pollinationsUrl || !prompt || !title) {
-      toast("Please generate an image and fill out the title", "warning");
+    if (!pollinationsUrl && !uploadedImage) {
+      toast("Please generate or upload an image", "warning");
+      return;
+    }
+    if (!title) {
+      toast("Please provide a title", "warning");
       return;
     }
 
@@ -64,6 +88,7 @@ export default function GenerateImagePage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           pollinationsUrl,
+          base64Image: uploadedImage,
           prompt,
           title,
           category,
@@ -117,34 +142,53 @@ export default function GenerateImagePage() {
                   className="w-full px-4 py-3 bg-black/20 border border-white/10 rounded-xl focus:outline-none focus:border-ugen-primary/50 text-white placeholder-white/30 resize-none transition-colors"
                 />
               </div>
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                type="submit"
-                disabled={isGenerating || !prompt.trim()}
-                className="w-full py-3 px-4 bg-white/5 hover:bg-white/10 border border-white/10 text-white font-medium rounded-xl transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isGenerating ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    Generating...
-                  </>
-                ) : (
-                  <>
-                    <Sparkles className="w-4 h-4 text-ugen-primary" />
-                    Generate Image
-                  </>
-                )}
-              </motion.button>
+              <div className="flex gap-3">
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  type="submit"
+                  disabled={isGenerating || !prompt.trim()}
+                  className="flex-1 py-3 px-4 bg-white/5 hover:bg-white/10 border border-white/10 text-white font-medium rounded-xl transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isGenerating ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Generating...
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="w-4 h-4 text-ugen-primary" />
+                      Generate Image
+                    </>
+                  )}
+                </motion.button>
+                <div className="relative">
+                  <input
+                    type="file"
+                    accept="image/png, image/jpeg, image/webp"
+                    onChange={handleFileUpload}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                    title="Upload from Gallery"
+                  />
+                  <motion.div
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="h-full px-4 bg-white/5 hover:bg-white/10 border border-white/10 text-white font-medium rounded-xl transition-all flex items-center justify-center gap-2"
+                  >
+                    <Upload className="w-4 h-4" />
+                    <span className="hidden sm:inline">Upload</span>
+                  </motion.div>
+                </div>
+              </div>
             </form>
           </div>
 
           {/* Preview Area */}
           <div className="aspect-square w-full rounded-3xl glass border border-white/10 overflow-hidden relative flex items-center justify-center bg-black/40">
-            {!pollinationsUrl ? (
+            {!pollinationsUrl && !uploadedImage ? (
               <div className="flex flex-col items-center justify-center text-white/40 gap-4">
                 <ImageIcon className="w-12 h-12 opacity-50" />
-                <p className="text-sm font-medium">Your generated image will appear here</p>
+                <p className="text-sm font-medium">Your image will appear here</p>
               </div>
             ) : (
               <>
@@ -154,13 +198,15 @@ export default function GenerateImagePage() {
                   </div>
                 )}
                 <img
-                  src={pollinationsUrl}
-                  alt="Generated AI Art"
+                  src={uploadedImage || pollinationsUrl || ""}
+                  alt="Preview"
                   className={`w-full h-full object-cover transition-opacity duration-500 ${isGenerating ? "opacity-50" : "opacity-100"}`}
                   onLoad={() => setIsGenerating(false)}
                   onError={() => {
-                    setIsGenerating(false);
-                    toast("Failed to load generated image", "error");
+                    if (pollinationsUrl) {
+                      setIsGenerating(false);
+                      toast("Failed to load generated image", "error");
+                    }
                   }}
                 />
               </>
@@ -227,7 +273,7 @@ export default function GenerateImagePage() {
                 <motion.button
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  disabled={isPublishing || !pollinationsUrl || isGenerating}
+                  disabled={isPublishing || (!pollinationsUrl && !uploadedImage) || isGenerating}
                   type="submit"
                   className="w-full py-4 px-4 bg-gradient-to-r from-ugen-primary to-ugen-accent text-white font-medium rounded-xl shadow-lg shadow-ugen-primary/20 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                 >

@@ -23,7 +23,7 @@ export async function GET(req: NextRequest) {
       conversations.map(async (conv) => {
         const otherId = conv.participants.find((id: string) => id !== session.user.id);
         if (!otherId) return conv;
-        let otherUser = {
+        let otherUser: { id: string; name: string; image?: string } = {
           id: otherId,
           name: "Unknown User",
         };
