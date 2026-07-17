@@ -26,31 +26,42 @@ export function PostViewTracker({ postId, onUpdate }: PostViewTrackerProps) {
     const el = ref.current;
     if (!el || hasViewedLocally.current) return;
 
+    let timer: NodeJS.Timeout | null = null;
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          try {
-            localStorage.setItem(`viewed_${postId}`, "true");
-          } catch {
-            // Ignore
-          }
-          hasViewedLocally.current = true;
-
-          // Track view on server
-          fetch(`/api/posts/${postId}/view`, {
-            method: "POST",
-          })
-            .then((res) => res.json())
-            .then((data) => {
-              if (data.views) {
-                onUpdate(data.views);
+          if (!timer) {
+            timer = setTimeout(() => {
+              try {
+                localStorage.setItem(`viewed_${postId}`, "true");
+              } catch {
+                // Ignore
               }
-            })
-            .catch((error) => {
-              console.error("Failed to track view:", error);
-            });
+              hasViewedLocally.current = true;
 
-          observer.disconnect();
+              // Track view on server
+              fetch(`/api/posts/${postId}/view`, {
+                method: "POST",
+              })
+                .then((res) => res.json())
+                .then((data) => {
+                  if (data.views) {
+                    onUpdate(data.views);
+                  }
+                })
+                .catch((error) => {
+                  console.error("Failed to track view:", error);
+                });
+
+              observer.disconnect();
+            }, 1000);
+          }
+        } else {
+          if (timer) {
+            clearTimeout(timer);
+            timer = null;
+          }
         }
       },
       { threshold: 0.1 }
@@ -59,6 +70,7 @@ export function PostViewTracker({ postId, onUpdate }: PostViewTrackerProps) {
     observer.observe(el);
 
     return () => {
+      if (timer) clearTimeout(timer);
       observer.disconnect();
     };
   }, [postId, onUpdate]);
