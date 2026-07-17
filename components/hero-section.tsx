@@ -37,7 +37,7 @@ export const HeroSection = () => {
           }}
         />
         {/* Dark overlays for readability and premium depth */}
-        <div className="absolute inset-0 bg-gradient-to-b from-ugen-bg/80 via-ugen-bg/90 to-ugen-bg" />
+        <div className="absolute inset-0 bg-linear-to-b from-ugen-bg/80 via-ugen-bg/90 to-ugen-bg" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-transparent via-ugen-bg/80 to-ugen-bg" />
       </motion.div>
 
@@ -111,14 +111,21 @@ export const HeroSection = () => {
 
           {/* Buttons */}
           <FadeUp>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link href="/gallery" passHref>
+            <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4">
+              <Link href="/ugen-gallery" passHref>
                 <motion.div
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="group relative inline-flex items-center justify-center px-8 py-4 text-base font-medium text-white transition-all duration-300 rounded-full bg-white/10 border border-white/20 hover:bg-white/20 hover:border-white/30 hover:shadow-[0_0_40px_rgba(99,102,241,0.4)] overflow-hidden"
+                  className="group relative inline-flex items-center justify-center
+      px-5 py-3 sm:px-8 sm:py-4
+      text-sm sm:text-base font-medium text-white
+      rounded-full bg-white/10 border border-white/20
+      hover:bg-white/20 hover:border-white/30
+      hover:shadow-[0_0_40px_rgba(99,102,241,0.4)]
+      transition-all duration-300 overflow-hidden"
                 >
                   <div className="absolute inset-0 bg-gradient-to-r from-ugen-primary/40 to-ugen-secondary/40 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
                   <span className="relative z-10 flex items-center gap-2">
                     Explore Gallery
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -130,8 +137,7 @@ export const HeroSection = () => {
                 <motion.div
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="group relative inline-flex items-center justify-center px-8 py-4 text-base font-medium text-white transition-all duration-300 rounded-full glass hover:bg-white/5"
-                >
+                  className="group relative inline-flex items-center justify-center px-5 py-3  sm:px-8 sm:py-4 text-sm sm:text-base font-medium text-white rounded-full glass hover:bg-white/5 transition-all duration-300" >
                   <span className="relative z-10 flex items-center gap-2">
                     <Play className="w-4 h-4 text-white/70 group-hover:text-white transition-colors" />
                     Learn AI
