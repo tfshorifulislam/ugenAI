@@ -133,7 +133,7 @@ export const HeroSection = () => {
                 </motion.div>
               </Link>
 
-              <Link href="/learn" passHref>
+              <Link href="/learn-ai" passHref>
                 <motion.div
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}

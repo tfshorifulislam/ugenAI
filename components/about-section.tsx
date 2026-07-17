@@ -141,7 +141,7 @@ export const AboutSection = () => {
 
               <FadeUp>
                 <div className="flex flex-row flex-wrap items-center justify-center gap-4">
-                  <Link href="/gallery">
+                  <Link href="/ugen-gallery">
                     <motion.div
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
@@ -155,7 +155,7 @@ export const AboutSection = () => {
                     </motion.div>
                   </Link>
 
-                  <Link href="/learn">
+                  <Link href="/learn-ai">
                     <motion.div
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
