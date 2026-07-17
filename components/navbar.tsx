@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { MessageSquare, Search } from "lucide-react";
+import { Sparkles, MessageSquare, Search } from "lucide-react";
 import { UserMenu } from "./user-menu";
 import { NotificationMenu } from "./notification-menu";
 import { UserSearchModal } from "./user-search-modal";
@@ -39,8 +39,23 @@ export const Navbar = () => {
       <div className="max-w-7xl mx-auto w-full flex items-center justify-between">
 
         {/* Logo */}
-        <Link href="/" className="relative z-10 flex items-center select-none">
-          <h1 className="text-[22px] md:text-2xl font-extrabold tracking-tight leading-none text-white">
+        {/* Logo */}
+        <Link
+          href="/"
+          className="relative z-10 flex items-center gap-2 select-none group"
+        >
+          {/* Logo Shape */}
+          <div className="relative flex items-center justify-center w-9 h-9 md:w-10 md:h-10 rounded-xl bg-linear-to-br from-[#3881f5] via-[#6633ff] to-[#9b5cff] shadow-lg overflow-hidden">
+            <Sparkles
+              size={20}
+              className="text-white md:w-6 md:h-6"/>
+            {/* Glow */}
+            <span className="absolute inset-0 bg-white/20 blur-xl opacity-0 group-hover:opacity-100 transition "/>
+          </div>
+
+
+          {/* Text */}
+          <h1 className="hidden sm:block text-2xl font-extrabold tracking-tight leading-none text-white ">
             ugen<span className="text-gradient">AI</span>
           </h1>
         </Link>
