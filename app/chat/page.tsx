@@ -95,20 +95,8 @@ export default function ChatPage() {
       if (!res.ok) throw new Error("Failed to load conversations");
       const data = await res.json();
       
-      // Since we don't have a user lookup API yet, we'll mock the other user's info
-      // In a real app, the backend should populate the other user's details
-      const populated = data.conversations.map((conv: Conversation) => {
-        const otherId = conv.participants.find(id => id !== session?.user.id) || "unknown";
-        return {
-          ...conv,
-          otherUser: {
-            id: otherId,
-            name: "Creator " + otherId.substring(0, 4),
-          }
-        };
-      });
-      // Remove any duplicate conversations just in case
-      const uniqueConversations = populated.filter((v: Conversation, i: number, a: Conversation[]) => 
+      // The backend now provides `otherUser`, so we just deduplicate
+      const uniqueConversations = data.conversations.filter((v: Conversation, i: number, a: Conversation[]) => 
         a.findIndex(t => t._id === v._id) === i
       );
       
