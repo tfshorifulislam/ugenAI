@@ -21,7 +21,7 @@ async function getPublicProfile(userId: string) {
   } catch (error) {
     console.error("Invalid ObjectId format:", error);
   }
-  
+
   if (!userDoc) return null;
 
   const posts = await db
@@ -45,7 +45,11 @@ async function getPublicProfile(userId: string) {
       bio: "AI Prompt Engineer & Creator",
       email: isOwner ? userDoc.email : undefined,
     },
-    posts: posts.map(post => ({ ...post, _id: post._id.toString() })),
+    posts: posts.map(post => ({ 
+      ...post, 
+      _id: post._id.toString(),
+      isLiked: session?.user?.id ? (post.likedBy || []).includes(session.user.id) : false
+    })),
     stats,
     isOwner
   };

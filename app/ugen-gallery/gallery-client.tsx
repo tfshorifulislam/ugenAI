@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Heart, Eye, Sparkles, Search } from "lucide-react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
+import { LikeButton } from "@/components/like-button";
 
 type Post = {
   _id: string;
@@ -18,6 +19,7 @@ type Post = {
   createdAt: string;
   likes: number;
   views: number;
+  isLiked: boolean;
 };
 
 export function GalleryClient({ initialPosts }: { initialPosts: Post[] }) {
@@ -146,10 +148,7 @@ export function GalleryClient({ initialPosts }: { initialPosts: Post[] }) {
 
                     {/* Stats */}
                     <div className="flex items-center gap-3 text-white/60">
-                      <div className="flex items-center gap-1">
-                        <Heart className="w-3.5 h-3.5" />
-                        <span className="text-xs font-medium">{post.likes || 0}</span>
-                      </div>
+                      <LikeButton postId={post._id} initialLikes={post.likes || 0} initialIsLiked={post.isLiked || false} />
                       <div className="flex items-center gap-1">
                         <Eye className="w-3.5 h-3.5" />
                         <span className="text-xs font-medium">{post.views || 0}</span>

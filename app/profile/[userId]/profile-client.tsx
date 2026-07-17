@@ -1,10 +1,11 @@
 "use client";
 
-import { Heart, Eye, Image as ImageIcon, Calendar, Sparkles, MessageSquare, Loader2 } from "lucide-react";
+import { Eye, Image as ImageIcon, Calendar, Sparkles, MessageSquare, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { motion } from "framer-motion";
+import { LikeButton } from "@/components/like-button";
 
 type ProfileProps = {
   user: any;
@@ -185,7 +186,7 @@ export function ProfileClient({ user, posts, stats, joinDate, isOwner }: Profile
                   <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center gap-3">
                     <h4 className="text-white font-bold text-lg text-center px-4 line-clamp-1">{post.title}</h4>
                     <div className="flex items-center gap-6 text-white font-medium">
-                      <span className="flex items-center gap-2"><Heart size={20} className="fill-white" /> {post.likes}</span>
+                      <LikeButton postId={post._id} initialLikes={post.likes || 0} initialIsLiked={post.isLiked || false} />
                       <span className="flex items-center gap-2"><Eye size={20} /> {post.views}</span>
                     </div>
                   </div>

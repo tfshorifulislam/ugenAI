@@ -1,10 +1,15 @@
-import { mongoClient } from "@/lib/auth";
+import { auth, mongoClient } from "@/lib/auth";
 import { Sparkles } from "lucide-react";
 import { GalleryClient } from "./gallery-client";
+import { headers } from "next/headers";
 
 export const revalidate = 0; // Disable static rendering to always show fresh posts
 
 async function getPosts() {
+  const reqHeaders = await headers();
+  const session = await auth.api.getSession({ headers: reqHeaders });
+  const userId = session?.user?.id;
+
   try {
     const db = mongoClient.db("ugenAI");
     const posts = await db
@@ -12,11 +17,12 @@ async function getPosts() {
       .find({ status: "published" })
       .sort({ createdAt: -1 })
       .toArray();
-      
+
     // Convert ObjectIds to strings to avoid Next.js warning
     return posts.map(post => ({
       ...post,
-      _id: post._id.toString()
+      _id: post._id.toString(),
+      isLiked: userId ? (post.likedBy || []).includes(userId) : false
     }));
   } catch (error) {
     console.error("Failed to fetch gallery posts:", error);
