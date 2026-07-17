@@ -4,9 +4,10 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, MessageSquare } from "lucide-react";
+import { Menu, X, MessageSquare, Search } from "lucide-react";
 import { UserMenu } from "./user-menu";
 import { NotificationMenu } from "./notification-menu";
+import { UserSearchModal } from "./user-search-modal";
 import { useSession, signOut } from "@/lib/auth-client";
 import { useToast } from "@/contexts/toast-context";
 import { useRouter } from "next/navigation";
@@ -26,6 +27,7 @@ export const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
+  const [searchOpen, setSearchOpen] = useState(false);
   const { toast, success } = useToast();
 
   const { data: session, isPending } = useSession();
@@ -79,6 +81,13 @@ export const Navbar = () => {
               <div className="w-8 h-8 rounded-full bg-white/10 animate-pulse" />
             ) : user ? (
               <div className="flex items-center gap-3">
+                <button
+                  onClick={() => setSearchOpen(true)}
+                  className="flex items-center justify-center w-10 h-10 rounded-full bg-white/10 border border-white/20 text-white/70 hover:text-white transition-all duration-300 hover:border-ugen-primary hover:shadow-[0_0_15px_rgba(99,102,241,0.5)]"
+                  title="Search Users"
+                >
+                  <Search size={18} />
+                </button>
                 <Link 
                   href="/chat" 
                   className="flex items-center justify-center w-10 h-10 rounded-full bg-white/10 border border-white/20 text-white/70 hover:text-white transition-all duration-300 hover:border-ugen-primary hover:shadow-[0_0_15px_rgba(99,102,241,0.5)]"
@@ -102,12 +111,22 @@ export const Navbar = () => {
           </div>
 
           {/* Mobile Menu Toggle */}
-          <button
-            className="md:hidden relative z-10 p-2 text-white/70 hover:text-white transition-colors"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          >
-            {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
+          {user ? (
+            <button
+              className="md:hidden relative z-10 p-2 text-white/70 hover:text-white transition-colors"
+              onClick={() => setSearchOpen(true)}
+              title="Search Users"
+            >
+              <Search size={24} />
+            </button>
+          ) : (
+            <button
+              className="md:hidden relative z-10 p-2 text-white/70 hover:text-white transition-colors"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            >
+              {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+          )}
         </div>
       </div>
 
@@ -180,8 +199,9 @@ export const Navbar = () => {
                             }
                           },
                         });
-                      } catch (err: any) {
-                        toast(err.message || "Failed to log out", "error");
+                      } catch (err: unknown) {
+                        const errMsg = err instanceof Error ? err.message : "Failed to log out";
+                        toast(errMsg, "error");
                       }
                     }}
                     className="text-left text-lg font-medium text-red-400 hover:text-red-300 mt-2"
@@ -210,6 +230,9 @@ export const Navbar = () => {
             </div>
           </motion.div>
         )}
+      </AnimatePresence>
+      <AnimatePresence>
+        {searchOpen && <UserSearchModal onClose={() => setSearchOpen(false)} />}
       </AnimatePresence>
     </motion.header>
   );
