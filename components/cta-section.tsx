@@ -69,7 +69,7 @@ export const CTASection = () => {
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full sm:w-auto">
                   
                   {/* Primary Button */}
-                  <Link href="/signup" passHref className="w-full sm:w-auto">
+                  <Link href="/generate-image" passHref className="w-full sm:w-auto">
                     <motion.div
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
